@@ -121,8 +121,24 @@ newdata <- data %>% filter(var1 == "value" & var2 == "value")
 #
 #
 
+# Matt's very laborious way of binding data together
 
+## Select all of the columns in the datasets to make sure they are all the same 
+## and have the same names using dplyr::select(). Then, turn them all into data tables.
 
+data1 <- as.data.table(data1)
+
+## Next, fix all of the variable types to make sure the variable types in each dataset
+## is aligned. For example...
+
+data1$v1 <- as.character(data1$v1)
+data1$v2 <- as.integer(data1$v2)
+data2$v1 <- as.character(data2$v1)
+data2$v2 <- as.integer(data2$v2)
+
+## Then, bind the datasets
+
+data <- funion(data1, data2)
 
 
 
