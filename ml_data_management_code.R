@@ -179,6 +179,10 @@ data <- data %>%
 #
 #
 
+## In this line, we need to identify which variable should not have duplicates to
+## then select it when we remove duplicates
+
+data <- data[!duplicated(data$v1),]
 
 
 
@@ -198,7 +202,8 @@ data <- data %>%
 #
 #
 
-
+data$v1R <- 7 - data$v1
+data$v2R <- 7 - data$v2
 
 
 
