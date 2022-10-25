@@ -80,7 +80,11 @@ final_product <- my_list %>%
 # Matt Method (before Zach method)
 #
 
+## not shown here, but typically need to clean dataset before merging
 
+merged_data <- data_pre %>% full_join(data_post, by = c("x"), suffix = c("_pre", "_post"))
+
+## not shown here, but typically need to review the merged column and do additional cleaning
 
 
 #
