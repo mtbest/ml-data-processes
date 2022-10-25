@@ -12,7 +12,8 @@
 
 #
 # Zach Method (built in studying the use case of needing to bind and merge 
-# different datasets that had different elements of missing data in each)
+# different datasets that had different elements of missing data in each...
+# this also works to bind datasets together as well)
 #
 
 library(tidyverse)
@@ -139,6 +140,62 @@ data2$v2 <- as.integer(data2$v2)
 ## Then, bind the datasets
 
 data <- funion(data1, data2)
+
+
+
+#
+#
+# Creating scale variables
+#
+#
+
+
+
+
+#
+#
+# Analyzing descriptive statistics of all items to see if there are any issues with direction or values or other factors → data checking guidelines
+#
+#
+
+
+
+
+#
+#
+# Handling missing data
+#
+#
+
+
+
+
+#
+#
+# Handling duplicates
+#
+#
+
+
+
+
+#
+#
+# Removing outliers
+#
+#
+
+
+
+
+
+#
+#
+# Reverse scoring items
+#
+#
+
+
 
 
 
