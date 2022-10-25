@@ -11,7 +11,8 @@
 #
 
 #
-# Zach Method
+# Zach Method (built in studying the use case of needing to bind and merge 
+# different datasets that had different elements of missing data in each)
 #
 
 library(tidyverse)
@@ -75,14 +76,32 @@ final_product <- my_list %>%
   reduce(full_join)
 
 
+#
+# Matt Method (before Zach method)
+#
 
+
+
+
+#
+#
 # Subsetting a dataset
+#
+#
 
 
 
 
 
+
+#
+#
 # Binding data together from various cohorts / surveys
+#
+#
+
+
+
 
 
 
