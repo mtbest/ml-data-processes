@@ -157,11 +157,71 @@ data <- data %>%
 
 #
 #
-# Analyzing descriptive statistics of all items to see if there are any issues with direction or values or other factors → data checking guidelines
+# Analyzing descriptive statistics of all items to see if there are any issues 
+# with direction or values or other factors → data checking guidelines
 #
 #
 
+# Quick way to look at means and SDs
 
+library(gtsummary)
+
+table <- data[c("v1", "v2", "v3", "v4", "v5")]
+
+table %>% tbl_summary(statistic = list(all_continuous() ~ "{mean} ({sd})"), 
+                       type = list(v1 ~ 'continuous',
+                                   v2 ~ 'continuous', 
+                                   v3 ~ 'continuous',
+                                   v4 ~ 'continuous',
+                                   v5 ~ 'continuous'),
+                       digits = all_continuous() ~ 2,
+                       missing_text = "(Missing)")
+
+
+#
+# More detailed way to look at descriptives
+#
+
+b1<- summarySE(data, measurevar="scale", na.rm=TRUE)
+b2<- summarySE(data, measurevar="v1", na.rm=TRUE)
+b3<- summarySE(data, measurevar="v2", na.rm=TRUE)
+b4<- summarySE(data, measurevar="v3", na.rm=TRUE)
+b5<- summarySE(data, measurevar="v4", na.rm=TRUE)
+b6<- summarySE(data, measurevar="v5", na.rm=TRUE)
+
+#Now, we're going to rename the mean (the 3rd variable) to actually be called mean
+names(b1)[3] <- "mean"
+names(b2)[3] <- "mean"
+names(b3)[3] <- "mean"
+names(b4)[3] <- "mean"
+names(b5)[3] <- "mean"
+names(b6)[3] <- "mean"
+
+# Now we are adding a variable that is the item text for what we're looking at
+b1$variable <- "Scale"
+b2$variable <- "Item 1"
+b3$variable <- "Item 2"
+b4$variable <- "Item 3"
+b5$variable <- "Item 4"
+b6$variable <- "Item 5"
+
+
+# Now we are adding a variable that is the name of what we're looking at
+b1$Type <- "Scale"
+b2$Type <- "Item 1"
+b3$Type <- "Item 2"
+b4$Type <- "Item 3"
+b5$Type <- "Item 4"
+b6$Type <- "Item 5"
+
+
+# Bind them all together!
+
+b <- rbind(b1,b2,b3,b4,b5,b6)
+
+# Create table
+
+pander(b[c(7,2:6)], caption="Table for Scale and Items",justify="left",round=2)
 
 
 #
