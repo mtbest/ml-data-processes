@@ -93,6 +93,23 @@ merged_data <- data_pre %>% full_join(data_post, by = c("x"), suffix = c("_pre",
 #
 #
 
+# Selecting certain rows
+
+subset <- data[c(22:60),]
+
+# Selecting certain columns
+
+subset <- data[,c(8:27)]
+
+## This technique can be used to delete a set of columns
+
+data_1 <- dplyr::select(data, -column1:-column18)
+
+# Filtering for a certain response or group
+
+newdata <- data %>% filter(var1 == 1 | var2 == 1)
+newdata <- data %>% filter(var1 == 1 & var2 == 1)
+newdata <- data %>% filter(var1 == "value" & var2 == "value")
 
 
 
