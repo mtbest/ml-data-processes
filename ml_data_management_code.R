@@ -149,7 +149,10 @@ data <- funion(data1, data2)
 #
 #
 
-
+data <- data %>% 
+  mutate(lv1 = ((v1 + v2 + v3) / 3)) %>%
+  mutate(lv2 = ((v4 + v5 + v6) / 3)) %>%
+  mutate(lv3 = ((v7 + v8 + v9 + v10 + v11) / 5))
 
 
 #
