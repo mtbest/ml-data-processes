@@ -133,6 +133,9 @@ pander(cortable(d$scale)) # uses correlation matrix function from above to look 
 #
 #
 
+glm(y ~ x, data, family = 'binomial') # very basic logistic regression equation
+
+
 
 
 
