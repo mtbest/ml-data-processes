@@ -17,8 +17,6 @@ pander(summary(aov(dv ~ gv, data = d)))
 pander(summarySE(d, groupvar="gv", measurevar="dv",na.rm=TRUE),round=2)
 
 
-
-
 #
 #
 # Correlation matrix
@@ -50,6 +48,11 @@ cortable <- function(x){
   return(Rnew) 
 } 
 
+# Example code for a correlation matrix
+
+ex_corr <- cortable(d[c("v1", "v2", "v3", "v4", "v5", "v6")])
+
+pander(ex_corr,round=2,title = "Item Correlations")
 
 
 #
