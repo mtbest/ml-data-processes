@@ -111,7 +111,11 @@ semPaths(CFA1)
 #
 #
 
-
+d$scale <- d[c("v1", "v2", "v3", "v4", "v5", "v6")]
+scale_alpha <- alpha(d$scale)
+pander(scale_alpha$total)
+pander(cortable(d$scale)) # uses correlation matrix function from above to look at
+                          # inter-item correlations
 
 
 #
