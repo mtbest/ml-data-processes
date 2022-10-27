@@ -79,6 +79,20 @@ pander(fa.parallel(d$scale))
 #
 #
 
+CFA_mod1 <- 
+  'F1 = ~ v1 + v2 + v3 + v4
+   F2 = ~ v5 + v6'
+
+CFA1 <- cfa(model = CFA_mod1, data = d)
+
+pander(summary(CFA1, fit.measures = TRUE, standardized = TRUE))
+pander(inspect(CFA1, "std")$lambda)
+
+pander(fitMeasures(CFA1, fit.measures = c("cfi", "tli", "rmsea")))
+pander(standardizedSolution(CFA1) %>%
+         filter(op == "=~" & lhs == "F2"))
+
+semPaths(CFA1)
 
 
 
