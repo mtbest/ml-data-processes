@@ -151,6 +151,36 @@ pander(cortable(d$scale)) # uses correlation matrix function from above to look 
 #
 #
 
+# Given these models need context, I am inserting code below from an analysis we ran
+# on our MAP USSF Development Academy data predicting Goals Scored for Attacking Players
+# We wanted to look at the random effect of club on the outcome of goals scored in tandem
+# with growth mindset variables and demographic variables
+
+mod1 <- lmer(Goals ~ (1|Club),data=Attacking) # Goals is DV and Club as a random intercept
+mod2 <- lmer(Goals ~ PGM_S + CGM_S + PGM_S:CGM_S + (1|Club),data=Attacking) # Goals is DV, 
+                                                                    # Player and Coach
+                                                                    # GM interaction,
+                                                                    # Club as random intercept
+mod3 <- lmer(Goals ~ AgeGroup_fac + urm + (1|Club),data=Attacking) # Goals is DV, 
+                                                          # Age Group and Ethnicity
+                                                          # analyzed as demographics,
+                                                          # Club as random intercept
+mod4 <- lmer(Goals ~ PGM_S + CGM_S + PGM_S:CGM_S + AgeGroup_fac + urm + (1|Club), data=Attacking)
+    # Combined model: Goals is DV, Player and Coach GM interaction, Age Group and Ethnicity
+    # included, Club as random intercept
+
+htmlreg(list(mod1,mod2,mod3,mod4),
+        
+        # this adds a symbol for marginal significance
+        stars= c(0.001, 0.01, 0.05, 0.1),
+        custom.coef.names = c("Intercept","Player GM (z)", "Coach GM (z)", 
+                              "Player-Coach GM Interaction", "U-14","U-15","U-16/17",
+                              "U-18/19","URM"),
+        custom.model.names = c("Base Model","Growth Mindset","Demographics","Both"),
+        caption="Growth Mindset Predicting Goals Scored for Attackers")
+
+
+
 
 
 
