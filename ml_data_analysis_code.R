@@ -69,7 +69,8 @@ pander(ex_corr,round=2,title = "Item Correlations")
 #
 #
 
-
+d$scale <- d[c("v1", "v2", "v3", "v4", "v5", "v6")]
+pander(fa.parallel(d$scale))
 
 
 #
