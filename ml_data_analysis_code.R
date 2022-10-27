@@ -124,6 +124,13 @@ pander(cortable(d$scale)) # uses correlation matrix function from above to look 
 #
 #
 
+lm(y ~ x, data = data) # very basic linear regression equation
+ggplot(data, aes(x, y)) +
+  geom_point() + geom_smooth(method = "lm", se = 0)
+
+lm(y ~ x + factor(z) + x:factor(z), data = data) # interaction linear regression equation
+ggplot(data, aes(x, y, color = factor(z))) +
+  geom_point() + geom_smooth(method = "lm", se = 0)
 
 
 
