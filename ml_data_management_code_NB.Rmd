@@ -15,6 +15,7 @@ library(tidyverse) # for data management
 library(psych) # to analyze data and descriptive statistics
 library(ggplot2) # to make some nice graphs
 library(pander) # to make some clean tables
+library(Rmisc) # to use summarySE() function
 library(gtsummary) # to make some cool summary tables that fit APA format
 
 ```
@@ -283,6 +284,21 @@ b <- rbind(b1,b2,b3,b4,b5,b6)
 # Create table
 
 pander(b[c(7,2:6)], caption="Table for Scale and Items",justify="left",round=2)
+
+```
+
+#### More detailed way to look at descriptives using the map() function
+
+``` {r include = TRUE}
+
+# using map
+
+b0 <- map(
+  .x = c("v1", "v2", "v3"),
+  .f = ~ summarySE(df, measurevar = .x, na.rm = TRUE)
+  )
+
+b0[[1]]
 
 ```
 
