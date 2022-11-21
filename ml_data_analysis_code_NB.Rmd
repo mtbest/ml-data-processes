@@ -18,6 +18,14 @@ library(pander) # to make some clean tables
 
 ```
 
+## Download Simulated Data
+
+``` {r include = TRUE}
+
+source(simulate-data.R)
+
+```
+
 
 ## Data Analysis
 
