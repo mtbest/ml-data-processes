@@ -132,11 +132,11 @@ merged_data <- data_pre %>% full_join(data_post, by = c("x"), suffix = c("_pre",
 
 # Selecting certain rows
 
-subset <- data[c(22:60),]
+subset1 <- data[c(22:60),]
 
 # Selecting certain columns
 
-subset <- data[,c(8:27)]
+subset2 <- data[,c(8:27)]
 
 ## This technique can be used to delete a set of columns
 
@@ -144,35 +144,36 @@ data_1 <- dplyr::select(data, -column1:-column18)
 
 # Filtering for a certain response or group
 
-newdata <- data %>% filter(var1 == 1 | var2 == 1)
-newdata <- data %>% filter(var1 == 1 & var2 == 1)
-newdata <- data %>% filter(var1 == "value" & var2 == "value")
+newdata1 <- data %>% filter(var1 == 1 | var2 == 1)
+newdata2 <- data %>% filter(var1 == 1 & var2 == 1)
+newdata3 <- data %>% filter(var1 == "value" & var2 == "value")
 
 ```
 
 
 ### Binding data together from various cohorts / surveys
 
-Matt's very laborious way of binding data together
+Matt's very laborious way of binding data together. One note is that the binding function cannot work if the variable names differ between the datasets.
 
 ``` {r include = TRUE}
 
 ## Select all of the columns in the datasets to make sure they are all the same 
 ## and have the same names using dplyr::select(). Then, turn them all into data tables.
 
-data1 <- as.data.table(data1)
+data1 <- as.data.table(data_a)
+data2 <- as.data.table(data_b)
 
 ## Next, fix all of the variable types to make sure the variable types in each dataset
-## is aligned. For example...
+## are aligned. For example...
 
-data1$v1 <- as.character(data1$v1)
-data1$v2 <- as.integer(data1$v2)
-data2$v1 <- as.character(data2$v1)
-data2$v2 <- as.integer(data2$v2)
+data1$v1_ch <- as.character(data1$v1)
+data1$v2_int <- as.integer(data1$v2)
+data2$v1_ch <- as.character(data2$v1)
+data2$v2_int <- as.integer(data2$v2)
 
 ## Then, bind the datasets
 
-data <- funion(data1, data2)
+fulldata <- funion(data1, data2)
 
 ```
 
@@ -271,7 +272,7 @@ In this line, we need to identify which variable should not have duplicates to t
 
 ``` {r include = TRUE}
 
-data <- data[!duplicated(data$v1),]
+nd_data <- data[!duplicated(data$v1),]
 
 ```
 
