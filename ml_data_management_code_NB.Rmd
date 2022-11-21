@@ -178,7 +178,9 @@ fulldata <- funion(data1, data2)
 ```
 
 
-### Creating scale variables
+### Creating scale variables 
+
+#### Using mutate and addition
 
 ``` {r include = TRUE}
 
@@ -186,6 +188,33 @@ data <- data %>%
   mutate(lv1 = ((v1 + v2 + v3) / 3)) %>%
   mutate(lv2 = ((v4 + v5 + v6) / 3)) %>%
   mutate(lv3 = ((v7 + v8 + v9 + v10 + v11) / 5))
+
+```
+
+#### Using mutate and rowMeans
+
+``` {r include = TRUE}
+
+data <- data %>% 
+  mutate(lv1 = rowMeans(c(v1,v2,v3), na.rm = TRUE)) %>%
+  mutate(lv2 = rowMeans(c(v4,v5,v6), na.rm = TRUE)) %>%
+  mutate(lv3 = rowMeans(c(v7,v8,v9,v10,v11), na.rm = TRUE))
+
+```
+
+#### Create composite variables with a custom rowMeans function
+
+This function was used for the Clifford Harm Scale (very long scale with lots of items to create the composite)
+
+``` {r include = TRUE}
+
+  mutate(
+    clif_harm_wrong_mean = rowMeans(
+      select(., 
+             starts_with("clif_harm") & ends_with("1")
+             ), 
+             na.rm = TRUE
+      )
 
 ```
 
