@@ -18,6 +18,14 @@ library(pander) # to make some clean tables
 
 ```
 
+## Load in RScript where functions are created
+
+``` {r include = TRUE}
+
+#source(__.R)
+
+```
+
 ## Download Simulated Data
 
 ``` {r include = TRUE}
@@ -40,6 +48,7 @@ TukeyHSD(dv_gv_AOV)
 pander(summarySE(d, groupvar="gv", measurevar="dv",na.rm=TRUE),round=2)
 
 ```
+
 
 ### Factorial ANOVAs with other post-hoc corrections
 
