@@ -1776,11 +1776,276 @@ data used in this file will come from a simulated dataset.</p>
 </div>
 <div id="data-analysis" class="section level2">
 <h2>Data Analysis</h2>
+<div id="anovas-with-post-hocs" class="section level3">
+<h3>ANOVAs with post-hocs</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5kdl9ndl9BT1YgPC0gYW92KGxtKGR2IH4gYXMuZmFjdG9yKGd2KSwgZGF0YSA9IGQpKSAjIGR2IGlzIHRoZSBkZXBlbmRlbnQgdmFyaWFibGVcbnBhbmRlcihzdW1tYXJ5KGR2X2d2X0FPVikpICAgICAgICAgICAgICAgICAgICAgICAgICMgYW5kIGd2IGlzIHRoZSBncm91cCB2YXJpYWJsZVxuVHVrZXlIU0QoZHZfZ3ZfQU9WKVxuXG5wYW5kZXIoc3VtbWFyeVNFKGQsIGdyb3VwdmFyPVwiZ3ZcIiwgbWVhc3VyZXZhcj1cImR2XCIsbmEucm09VFJVRSkscm91bmQ9MilcblxuYGBgIn0= -->
+<pre class="r"><code>
+dv_gv_AOV &lt;- aov(lm(dv ~ as.factor(gv), data = d)) # dv is the dependent variable
+pander(summary(dv_gv_AOV))                         # and gv is the group variable
+TukeyHSD(dv_gv_AOV)
+
+pander(summarySE(d, groupvar=&quot;gv&quot;, measurevar=&quot;dv&quot;,na.rm=TRUE),round=2)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="correlation-matrix" class="section level3">
+<h3>Correlation matrix</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIENyZWF0aW5nIGEgZnVuY3Rpb24gdG8gY3JlYXRlIG5pY2UgY29ycmVsYXRpb24gbWF0cmljZXNcblxuY29ydGFibGUgPC0gZnVuY3Rpb24oeCl7IFxuICByZXF1aXJlKEhtaXNjKSBcbiAgeCA8LSBhcy5tYXRyaXgoeCkgXG4gIFIgPC0gcmNvcnIoeCkkciBcbiAgcCA8LSByY29ycih4KSRQIFxuICAjIyBkZWZpbmUgbm90aW9ucyBmb3Igc2lnbmlmaWNhbmNlIGxldmVsczsgc3BhY2luZyBpcyBpbXBvcnRhbnQuXG4gIG15c3RhcnMgPC0gaWZlbHNlKHAgPCAuMDAxLCBcIioqKlwiLCBpZmVsc2UocCA8IC4wMSwgXCIqKiBcIiwgaWZlbHNlKHAgPCAuMDUsIFwiKiBcIiwgXCIgXCIpKSlcbiAgIyMgdHJ1bmNhdGUgdGhlIG1hdHJpeCB0aGF0IGhvbGRzIHRoZSBjb3JyZWxhdGlvbnMgdG8gdHdvIGRlY2ltYWxcbiAgUiA8LSBmb3JtYXQocm91bmQoY2JpbmQocmVwKC0xLjExLCBuY29sKHgpKSwgUiksIDIpKVssLTFdIFxuICAjIyBidWlsZCBhIG5ldyBtYXRyaXggdGhhdCBpbmNsdWRlcyB0aGUgY29ycmVsYXRpb25zIHdpdGggdGhlaXIgYXBwcm9wcmlhdGUgc3RhcnMgXG4gIFJuZXcgPC0gbWF0cml4KHBhc3RlKFIsIG15c3RhcnMsIHNlcD1cIlwiKSwgbmNvbD1uY29sKHgpKSBcbiAgZGlhZyhSbmV3KSA8LSBwYXN0ZShkaWFnKFIpLCBcIiBcIiwgc2VwPVwiXCIpIFxuICByb3duYW1lcyhSbmV3KSA8LSBjb2xuYW1lcyh4KSBcbiAgY29sbmFtZXMoUm5ldykgPC0gcGFzdGUoY29sbmFtZXMoeCksIFwiXCIsIHNlcD1cIlwiKSBcbiAgIyMgcmVtb3ZlIHVwcGVyIHRyaWFuZ2xlXG4gIFJuZXcgPC0gYXMubWF0cml4KFJuZXcpXG4gIFJuZXdbdXBwZXIudHJpKFJuZXcsIGRpYWcgPSBUUlVFKV0gPC0gXCJcIlxuICBSbmV3IDwtIGFzLmRhdGEuZnJhbWUoUm5ldykgXG4gICMjIHJlbW92ZSBsYXN0IGNvbHVtbiBhbmQgcmV0dXJuIHRoZSBtYXRyaXggKHdoaWNoIGlzIG5vdyBhIGRhdGEgZnJhbWUpXG4gIFJuZXcgPC0gY2JpbmQoUm5ld1sxOmxlbmd0aChSbmV3KS0xXSlcbiAgcmV0dXJuKFJuZXcpIFxufSBcblxuIyBFeGFtcGxlIGNvZGUgZm9yIGEgY29ycmVsYXRpb24gbWF0cml4XG5cbmV4X2NvcnIgPC0gY29ydGFibGUoZFtjKFwidjFcIiwgXCJ2MlwiLCBcInYzXCIsIFwidjRcIiwgXCJ2NVwiLCBcInY2XCIpXSlcblxucGFuZGVyKGV4X2NvcnIscm91bmQ9Mix0aXRsZSA9IFwiSXRlbSBDb3JyZWxhdGlvbnNcIilcblxuYGBgIn0= -->
+<pre class="r"><code>
+# Creating a function to create nice correlation matrices
+
+cortable &lt;- function(x){ 
+  require(Hmisc) 
+  x &lt;- as.matrix(x) 
+  R &lt;- rcorr(x)$r 
+  p &lt;- rcorr(x)$P 
+  ## define notions for significance levels; spacing is important.
+  mystars &lt;- ifelse(p &lt; .001, &quot;***&quot;, ifelse(p &lt; .01, &quot;** &quot;, ifelse(p &lt; .05, &quot;* &quot;, &quot; &quot;)))
+  ## truncate the matrix that holds the correlations to two decimal
+  R &lt;- format(round(cbind(rep(-1.11, ncol(x)), R), 2))[,-1] 
+  ## build a new matrix that includes the correlations with their appropriate stars 
+  Rnew &lt;- matrix(paste(R, mystars, sep=&quot;&quot;), ncol=ncol(x)) 
+  diag(Rnew) &lt;- paste(diag(R), &quot; &quot;, sep=&quot;&quot;) 
+  rownames(Rnew) &lt;- colnames(x) 
+  colnames(Rnew) &lt;- paste(colnames(x), &quot;&quot;, sep=&quot;&quot;) 
+  ## remove upper triangle
+  Rnew &lt;- as.matrix(Rnew)
+  Rnew[upper.tri(Rnew, diag = TRUE)] &lt;- &quot;&quot;
+  Rnew &lt;- as.data.frame(Rnew) 
+  ## remove last column and return the matrix (which is now a data frame)
+  Rnew &lt;- cbind(Rnew[1:length(Rnew)-1])
+  return(Rnew) 
+} 
+
+# Example code for a correlation matrix
+
+ex_corr &lt;- cortable(d[c(&quot;v1&quot;, &quot;v2&quot;, &quot;v3&quot;, &quot;v4&quot;, &quot;v5&quot;, &quot;v6&quot;)])
+
+pander(ex_corr,round=2,title = &quot;Item Correlations&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="creating-great-tables-and-graphs" class="section level3">
+<h3>Creating great tables and graphs</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="efa" class="section level3">
+<h3>EFA</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5kJHNjYWxlIDwtIGRbYyhcInYxXCIsIFwidjJcIiwgXCJ2M1wiLCBcInY0XCIsIFwidjVcIiwgXCJ2NlwiKV1cbnBhbmRlcihmYS5wYXJhbGxlbChkJHNjYWxlKSlcblxuYGBgIn0= -->
+<pre class="r"><code>
+d$scale &lt;- d[c(&quot;v1&quot;, &quot;v2&quot;, &quot;v3&quot;, &quot;v4&quot;, &quot;v5&quot;, &quot;v6&quot;)]
+pander(fa.parallel(d$scale))
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="cfa" class="section level3">
+<h3>CFA</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5DRkFfbW9kMSA8LSBcbiAgJ0YxID0gfiB2MSArIHYyICsgdjMgKyB2NFxuICAgRjIgPSB+IHY1ICsgdjYnXG5cbkNGQTEgPC0gY2ZhKG1vZGVsID0gQ0ZBX21vZDEsIGRhdGEgPSBkKVxuXG5wYW5kZXIoc3VtbWFyeShDRkExLCBmaXQubWVhc3VyZXMgPSBUUlVFLCBzdGFuZGFyZGl6ZWQgPSBUUlVFKSlcbnBhbmRlcihpbnNwZWN0KENGQTEsIFwic3RkXCIpJGxhbWJkYSlcblxucGFuZGVyKGZpdE1lYXN1cmVzKENGQTEsIGZpdC5tZWFzdXJlcyA9IGMoXCJjZmlcIiwgXCJ0bGlcIiwgXCJybXNlYVwiKSkpXG5wYW5kZXIoc3RhbmRhcmRpemVkU29sdXRpb24oQ0ZBMSkgJT4lXG4gICAgICAgICBmaWx0ZXIob3AgPT0gXCI9flwiICYgbGhzID09IFwiRjJcIikpXG5cbnNlbVBhdGhzKENGQTEpXG5cbmBgYCJ9 -->
+<pre class="r"><code>
+CFA_mod1 &lt;- 
+  &#39;F1 = ~ v1 + v2 + v3 + v4
+   F2 = ~ v5 + v6&#39;
+
+CFA1 &lt;- cfa(model = CFA_mod1, data = d)
+
+pander(summary(CFA1, fit.measures = TRUE, standardized = TRUE))
+pander(inspect(CFA1, &quot;std&quot;)$lambda)
+
+pander(fitMeasures(CFA1, fit.measures = c(&quot;cfi&quot;, &quot;tli&quot;, &quot;rmsea&quot;)))
+pander(standardizedSolution(CFA1) %&gt;%
+         filter(op == &quot;=~&quot; &amp; lhs == &quot;F2&quot;))
+
+semPaths(CFA1)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="path-analysis-and-sem" class="section level3">
+<h3>Path analysis and SEM</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="reliability-cronbachs-alpha-coefficients" class="section level3">
+<h3>Reliability / Cronbach’s alpha coefficients</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5kJHNjYWxlIDwtIGRbYyhcInYxXCIsIFwidjJcIiwgXCJ2M1wiLCBcInY0XCIsIFwidjVcIiwgXCJ2NlwiKV1cbnNjYWxlX2FscGhhIDwtIGFscGhhKGQkc2NhbGUpXG5wYW5kZXIoc2NhbGVfYWxwaGEkdG90YWwpXG5wYW5kZXIoY29ydGFibGUoZCRzY2FsZSkpICMgdXNlcyBjb3JyZWxhdGlvbiBtYXRyaXggZnVuY3Rpb24gZnJvbSBhYm92ZSB0byBsb29rIGF0XG4gICAgICAgICAgICAgICAgICAgICAgICAgICMgaW50ZXItaXRlbSBjb3JyZWxhdGlvbnNcblxuYGBgIn0= -->
+<pre class="r"><code>
+d$scale &lt;- d[c(&quot;v1&quot;, &quot;v2&quot;, &quot;v3&quot;, &quot;v4&quot;, &quot;v5&quot;, &quot;v6&quot;)]
+scale_alpha &lt;- alpha(d$scale)
+pander(scale_alpha$total)
+pander(cortable(d$scale)) # uses correlation matrix function from above to look at
+                          # inter-item correlations
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="linear-regression" class="section level3">
+<h3>Linear regression</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5sbSh5IH4geCwgZGF0YSA9IGRhdGEpICMgdmVyeSBiYXNpYyBsaW5lYXIgcmVncmVzc2lvbiBlcXVhdGlvblxuZ2dwbG90KGRhdGEsIGFlcyh4LCB5KSkgK1xuICBnZW9tX3BvaW50KCkgKyBnZW9tX3Ntb290aChtZXRob2QgPSBcImxtXCIsIHNlID0gMClcblxubG0oeSB+IHggKyBmYWN0b3IoeikgKyB4OmZhY3Rvcih6KSwgZGF0YSA9IGRhdGEpICMgaW50ZXJhY3Rpb24gbGluZWFyIHJlZ3Jlc3Npb24gZXF1YXRpb25cbmdncGxvdChkYXRhLCBhZXMoeCwgeSwgY29sb3IgPSBmYWN0b3IoeikpKSArXG4gIGdlb21fcG9pbnQoKSArIGdlb21fc21vb3RoKG1ldGhvZCA9IFwibG1cIiwgc2UgPSAwKVxuXG5gYGAifQ== -->
+<pre class="r"><code>
+lm(y ~ x, data = data) # very basic linear regression equation
+ggplot(data, aes(x, y)) +
+  geom_point() + geom_smooth(method = &quot;lm&quot;, se = 0)
+
+lm(y ~ x + factor(z) + x:factor(z), data = data) # interaction linear regression equation
+ggplot(data, aes(x, y, color = factor(z))) +
+  geom_point() + geom_smooth(method = &quot;lm&quot;, se = 0)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="logistic-regression" class="section level3">
+<h3>Logistic regression</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5nbG0oeSB+IHgsIGRhdGEsIGZhbWlseSA9ICdiaW5vbWlhbCcpICMgdmVyeSBiYXNpYyBsb2dpc3RpYyByZWdyZXNzaW9uIGVxdWF0aW9uXG5cbmBgYCJ9 -->
+<pre class="r"><code>
+glm(y ~ x, data, family = &#39;binomial&#39;) # very basic logistic regression equation
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="tests-of-baseline-equivalence" class="section level3">
+<h3>Tests of baseline equivalence</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="multilevel-models-hlms" class="section level3">
+<h3>Multilevel models / HLMs</h3>
+<p>Given these models need context, I am inserting code below from an
+analysis we ran on our MAP USSF Development Academy data predicting
+Goals Scored for Attacking Players. We wanted to look at the random
+effect of club on the outcome of goals scored in tandem with growth
+mindset variables and demographic variables.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5tb2QxIDwtIGxtZXIoR29hbHMgfiAoMXxDbHViKSxkYXRhPUF0dGFja2luZykgIyBHb2FscyBpcyBEViBhbmQgQ2x1YiBhcyBhIHJhbmRvbSBpbnRlcmNlcHRcbm1vZDIgPC0gbG1lcihHb2FscyB+IFBHTV9TICsgQ0dNX1MgKyBQR01fUzpDR01fUyArICgxfENsdWIpLGRhdGE9QXR0YWNraW5nKSAjIEdvYWxzIGlzIERWLCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBQbGF5ZXIgYW5kIENvYWNoXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICMgR00gaW50ZXJhY3Rpb24sXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICMgQ2x1YiBhcyByYW5kb20gaW50ZXJjZXB0XG5tb2QzIDwtIGxtZXIoR29hbHMgfiBBZ2VHcm91cF9mYWMgKyB1cm0gKyAoMXxDbHViKSxkYXRhPUF0dGFja2luZykgIyBHb2FscyBpcyBEViwgXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBBZ2UgR3JvdXAgYW5kIEV0aG5pY2l0eVxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICMgYW5hbHl6ZWQgYXMgZGVtb2dyYXBoaWNzLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICMgQ2x1YiBhcyByYW5kb20gaW50ZXJjZXB0XG5tb2Q0IDwtIGxtZXIoR29hbHMgfiBQR01fUyArIENHTV9TICsgUEdNX1M6Q0dNX1MgKyBBZ2VHcm91cF9mYWMgKyB1cm0gKyAoMXxDbHViKSwgZGF0YT1BdHRhY2tpbmcpXG4gICAgIyBDb21iaW5lZCBtb2RlbDogR29hbHMgaXMgRFYsIFBsYXllciBhbmQgQ29hY2ggR00gaW50ZXJhY3Rpb24sIEFnZSBHcm91cCBhbmQgRXRobmljaXR5XG4gICAgIyBpbmNsdWRlZCwgQ2x1YiBhcyByYW5kb20gaW50ZXJjZXB0XG5cbmh0bWxyZWcobGlzdChtb2QxLG1vZDIsbW9kMyxtb2Q0KSxcbiAgICAgICAgXG4gICAgICAgICMgdGhpcyBhZGRzIGEgc3ltYm9sIGZvciBtYXJnaW5hbCBzaWduaWZpY2FuY2VcbiAgICAgICAgc3RhcnM9IGMoMC4wMDEsIDAuMDEsIDAuMDUsIDAuMSksXG4gICAgICAgIGN1c3RvbS5jb2VmLm5hbWVzID0gYyhcIkludGVyY2VwdFwiLFwiUGxheWVyIEdNICh6KVwiLCBcIkNvYWNoIEdNICh6KVwiLCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFwiUGxheWVyLUNvYWNoIEdNIEludGVyYWN0aW9uXCIsIFwiVS0xNFwiLFwiVS0xNVwiLFwiVS0xNi8xN1wiLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXCJVLTE4LzE5XCIsXCJVUk1cIiksXG4gICAgICAgIGN1c3RvbS5tb2RlbC5uYW1lcyA9IGMoXCJCYXNlIE1vZGVsXCIsXCJHcm93dGggTWluZHNldFwiLFwiRGVtb2dyYXBoaWNzXCIsXCJCb3RoXCIpLFxuICAgICAgICBjYXB0aW9uPVwiR3Jvd3RoIE1pbmRzZXQgUHJlZGljdGluZyBHb2FscyBTY29yZWQgZm9yIEF0dGFja2Vyc1wiKVxuXG5cbmBgYCJ9 -->
+<pre class="r"><code>
+mod1 &lt;- lmer(Goals ~ (1|Club),data=Attacking) # Goals is DV and Club as a random intercept
+mod2 &lt;- lmer(Goals ~ PGM_S + CGM_S + PGM_S:CGM_S + (1|Club),data=Attacking) # Goals is DV, 
+                                                                    # Player and Coach
+                                                                    # GM interaction,
+                                                                    # Club as random intercept
+mod3 &lt;- lmer(Goals ~ AgeGroup_fac + urm + (1|Club),data=Attacking) # Goals is DV, 
+                                                          # Age Group and Ethnicity
+                                                          # analyzed as demographics,
+                                                          # Club as random intercept
+mod4 &lt;- lmer(Goals ~ PGM_S + CGM_S + PGM_S:CGM_S + AgeGroup_fac + urm + (1|Club), data=Attacking)
+    # Combined model: Goals is DV, Player and Coach GM interaction, Age Group and Ethnicity
+    # included, Club as random intercept
+
+htmlreg(list(mod1,mod2,mod3,mod4),
+        
+        # this adds a symbol for marginal significance
+        stars= c(0.001, 0.01, 0.05, 0.1),
+        custom.coef.names = c(&quot;Intercept&quot;,&quot;Player GM (z)&quot;, &quot;Coach GM (z)&quot;, 
+                              &quot;Player-Coach GM Interaction&quot;, &quot;U-14&quot;,&quot;U-15&quot;,&quot;U-16/17&quot;,
+                              &quot;U-18/19&quot;,&quot;URM&quot;),
+        custom.model.names = c(&quot;Base Model&quot;,&quot;Growth Mindset&quot;,&quot;Demographics&quot;,&quot;Both&quot;),
+        caption=&quot;Growth Mindset Predicting Goals Scored for Attackers&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="response-surface-analysis" class="section level3">
+<h3>Response surface analysis</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="cluster-analysis" class="section level3">
+<h3>Cluster analysis</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="multigroup-analysis-testing-indirect-effects-in-a-path-model-for-different-demographic-groups" class="section level3">
+<h3>Multigroup analysis (testing indirect effects in a path model for
+different demographic groups)</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="profile-analysis" class="section level3">
+<h3>Profile analysis</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="power-analysis" class="section level3">
+<h3>Power analysis</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="bayesian-predictive-models" class="section level3">
+<h3>Bayesian predictive models</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="mediationmoderation-analysis" class="section level3">
+<h3>Mediation/moderation analysis</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="propensity-score-matching" class="section level3">
+<h3>Propensity score matching</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="creating-a-color-scheme-to-match-our-ml-branding-and-use-in-our-graphs" class="section level3">
+<h3>Creating a color scheme to match our ML branding and use in our
+graphs</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
 </div>
+</div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIk1MIERhdGEgQW5hbHlzaXMgQ29kZSINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQojIE1MIERhdGEgQW5hbHlzaXMgQ29kZQ0KDQojIyBJbnRybw0KDQpUaGlzIGlzIHRoZSBSIE5vdGVib29rIGZvciBvdXIgTUwgRGF0YSBBbmFseXNpcyBDb2RlLiBXZSBvcmlnaW5hbGx5IHdvcmtlZCBvbiB0aGlzIGluIGFuIFJTY3JpcHQsIGJ1dCB3aWxsIG5vdyB1c2UgYW4gUiBOb3RlYm9vayBmb3IgaXQuIFRoZSBkYXRhIHVzZWQgaW4gdGhpcyBmaWxlIHdpbGwgY29tZSBmcm9tIGEgc2ltdWxhdGVkIGRhdGFzZXQuDQoNCiMjIERvd25sb2FkIHBhY2thZ2VzDQoNCmBgYCB7ciBpbmNsdWRlID0gRkFMU0V9DQpsaWJyYXJ5KHRpZHl2ZXJzZSkgIyBmb3IgZGF0YSBtYW5hZ2VtZW50DQpsaWJyYXJ5KHBzeWNoKSAjIHRvIGFuYWx5emUgZGF0YSBhbmQgZGVzY3JpcHRpdmUgc3RhdGlzdGljcw0KbGlicmFyeShnZ3Bsb3QyKSAjIHRvIG1ha2Ugc29tZSBuaWNlIGdyYXBocw0KbGlicmFyeShwYW5kZXIpICMgdG8gbWFrZSBzb21lIGNsZWFuIHRhYmxlcw0KDQpgYGANCg0KDQojIyBEYXRhIEFuYWx5c2lzDQoNCg0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIk1MIERhdGEgQW5hbHlzaXMgQ29kZSINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQojIE1MIERhdGEgQW5hbHlzaXMgQ29kZQ0KDQojIyBJbnRybw0KDQpUaGlzIGlzIHRoZSBSIE5vdGVib29rIGZvciBvdXIgTUwgRGF0YSBBbmFseXNpcyBDb2RlLiBXZSBvcmlnaW5hbGx5IHdvcmtlZCBvbiB0aGlzIGluIGFuIFJTY3JpcHQsIGJ1dCB3aWxsIG5vdyB1c2UgYW4gUiBOb3RlYm9vayBmb3IgaXQuIFRoZSBkYXRhIHVzZWQgaW4gdGhpcyBmaWxlIHdpbGwgY29tZSBmcm9tIGEgc2ltdWxhdGVkIGRhdGFzZXQuDQoNCiMjIERvd25sb2FkIHBhY2thZ2VzDQoNCmBgYCB7ciBpbmNsdWRlID0gRkFMU0V9DQpsaWJyYXJ5KHRpZHl2ZXJzZSkgIyBmb3IgZGF0YSBtYW5hZ2VtZW50DQpsaWJyYXJ5KHBzeWNoKSAjIHRvIGFuYWx5emUgZGF0YSBhbmQgZGVzY3JpcHRpdmUgc3RhdGlzdGljcw0KbGlicmFyeShnZ3Bsb3QyKSAjIHRvIG1ha2Ugc29tZSBuaWNlIGdyYXBocw0KbGlicmFyeShwYW5kZXIpICMgdG8gbWFrZSBzb21lIGNsZWFuIHRhYmxlcw0KDQpgYGANCg0KDQojIyBEYXRhIEFuYWx5c2lzDQoNCiMjIyBBTk9WQXMgd2l0aCBwb3N0LWhvY3MNCg0KYGBgIHtyIGluY2x1ZGUgPSBUUlVFfQ0KDQpkdl9ndl9BT1YgPC0gYW92KGxtKGR2IH4gYXMuZmFjdG9yKGd2KSwgZGF0YSA9IGQpKSAjIGR2IGlzIHRoZSBkZXBlbmRlbnQgdmFyaWFibGUNCnBhbmRlcihzdW1tYXJ5KGR2X2d2X0FPVikpICAgICAgICAgICAgICAgICAgICAgICAgICMgYW5kIGd2IGlzIHRoZSBncm91cCB2YXJpYWJsZQ0KVHVrZXlIU0QoZHZfZ3ZfQU9WKQ0KDQpwYW5kZXIoc3VtbWFyeVNFKGQsIGdyb3VwdmFyPSJndiIsIG1lYXN1cmV2YXI9ImR2IixuYS5ybT1UUlVFKSxyb3VuZD0yKQ0KDQpgYGANCg0KDQojIyMgQ29ycmVsYXRpb24gbWF0cml4DQoNCmBgYCB7ciBpbmNsdWRlID0gVFJVRX0NCg0KIyBDcmVhdGluZyBhIGZ1bmN0aW9uIHRvIGNyZWF0ZSBuaWNlIGNvcnJlbGF0aW9uIG1hdHJpY2VzDQoNCmNvcnRhYmxlIDwtIGZ1bmN0aW9uKHgpeyANCiAgcmVxdWlyZShIbWlzYykgDQogIHggPC0gYXMubWF0cml4KHgpIA0KICBSIDwtIHJjb3JyKHgpJHIgDQogIHAgPC0gcmNvcnIoeCkkUCANCiAgIyMgZGVmaW5lIG5vdGlvbnMgZm9yIHNpZ25pZmljYW5jZSBsZXZlbHM7IHNwYWNpbmcgaXMgaW1wb3J0YW50Lg0KICBteXN0YXJzIDwtIGlmZWxzZShwIDwgLjAwMSwgIioqKiIsIGlmZWxzZShwIDwgLjAxLCAiKiogIiwgaWZlbHNlKHAgPCAuMDUsICIqICIsICIgIikpKQ0KICAjIyB0cnVuY2F0ZSB0aGUgbWF0cml4IHRoYXQgaG9sZHMgdGhlIGNvcnJlbGF0aW9ucyB0byB0d28gZGVjaW1hbA0KICBSIDwtIGZvcm1hdChyb3VuZChjYmluZChyZXAoLTEuMTEsIG5jb2woeCkpLCBSKSwgMikpWywtMV0gDQogICMjIGJ1aWxkIGEgbmV3IG1hdHJpeCB0aGF0IGluY2x1ZGVzIHRoZSBjb3JyZWxhdGlvbnMgd2l0aCB0aGVpciBhcHByb3ByaWF0ZSBzdGFycyANCiAgUm5ldyA8LSBtYXRyaXgocGFzdGUoUiwgbXlzdGFycywgc2VwPSIiKSwgbmNvbD1uY29sKHgpKSANCiAgZGlhZyhSbmV3KSA8LSBwYXN0ZShkaWFnKFIpLCAiICIsIHNlcD0iIikgDQogIHJvd25hbWVzKFJuZXcpIDwtIGNvbG5hbWVzKHgpIA0KICBjb2xuYW1lcyhSbmV3KSA8LSBwYXN0ZShjb2xuYW1lcyh4KSwgIiIsIHNlcD0iIikgDQogICMjIHJlbW92ZSB1cHBlciB0cmlhbmdsZQ0KICBSbmV3IDwtIGFzLm1hdHJpeChSbmV3KQ0KICBSbmV3W3VwcGVyLnRyaShSbmV3LCBkaWFnID0gVFJVRSldIDwtICIiDQogIFJuZXcgPC0gYXMuZGF0YS5mcmFtZShSbmV3KSANCiAgIyMgcmVtb3ZlIGxhc3QgY29sdW1uIGFuZCByZXR1cm4gdGhlIG1hdHJpeCAod2hpY2ggaXMgbm93IGEgZGF0YSBmcmFtZSkNCiAgUm5ldyA8LSBjYmluZChSbmV3WzE6bGVuZ3RoKFJuZXcpLTFdKQ0KICByZXR1cm4oUm5ldykgDQp9IA0KDQojIEV4YW1wbGUgY29kZSBmb3IgYSBjb3JyZWxhdGlvbiBtYXRyaXgNCg0KZXhfY29yciA8LSBjb3J0YWJsZShkW2MoInYxIiwgInYyIiwgInYzIiwgInY0IiwgInY1IiwgInY2IildKQ0KDQpwYW5kZXIoZXhfY29ycixyb3VuZD0yLHRpdGxlID0gIkl0ZW0gQ29ycmVsYXRpb25zIikNCg0KYGBgDQoNCg0KIyMjIENyZWF0aW5nIGdyZWF0IHRhYmxlcyBhbmQgZ3JhcGhzDQoNCmBgYCB7ciBpbmNsdWRlID0gVFJVRX0NCg0KYGBgDQoNCg0KIyMjIEVGQQ0KDQpgYGAge3IgaW5jbHVkZSA9IFRSVUV9DQoNCmQkc2NhbGUgPC0gZFtjKCJ2MSIsICJ2MiIsICJ2MyIsICJ2NCIsICJ2NSIsICJ2NiIpXQ0KcGFuZGVyKGZhLnBhcmFsbGVsKGQkc2NhbGUpKQ0KDQpgYGANCg0KDQojIyMgQ0ZBDQoNCmBgYCB7ciBpbmNsdWRlID0gVFJVRX0NCg0KQ0ZBX21vZDEgPC0gDQogICdGMSA9IH4gdjEgKyB2MiArIHYzICsgdjQNCiAgIEYyID0gfiB2NSArIHY2Jw0KDQpDRkExIDwtIGNmYShtb2RlbCA9IENGQV9tb2QxLCBkYXRhID0gZCkNCg0KcGFuZGVyKHN1bW1hcnkoQ0ZBMSwgZml0Lm1lYXN1cmVzID0gVFJVRSwgc3RhbmRhcmRpemVkID0gVFJVRSkpDQpwYW5kZXIoaW5zcGVjdChDRkExLCAic3RkIikkbGFtYmRhKQ0KDQpwYW5kZXIoZml0TWVhc3VyZXMoQ0ZBMSwgZml0Lm1lYXN1cmVzID0gYygiY2ZpIiwgInRsaSIsICJybXNlYSIpKSkNCnBhbmRlcihzdGFuZGFyZGl6ZWRTb2x1dGlvbihDRkExKSAlPiUNCiAgICAgICAgIGZpbHRlcihvcCA9PSAiPX4iICYgbGhzID09ICJGMiIpKQ0KDQpzZW1QYXRocyhDRkExKQ0KDQpgYGANCg0KDQojIyMgUGF0aCBhbmFseXNpcyBhbmQgU0VNDQoNCmBgYCB7ciBpbmNsdWRlID0gVFJVRX0NCg0KYGBgDQoNCg0KIyMjIFJlbGlhYmlsaXR5IC8gQ3JvbmJhY2gncyBhbHBoYSBjb2VmZmljaWVudHMNCg0KYGBgIHtyIGluY2x1ZGUgPSBUUlVFfQ0KDQpkJHNjYWxlIDwtIGRbYygidjEiLCAidjIiLCAidjMiLCAidjQiLCAidjUiLCAidjYiKV0NCnNjYWxlX2FscGhhIDwtIGFscGhhKGQkc2NhbGUpDQpwYW5kZXIoc2NhbGVfYWxwaGEkdG90YWwpDQpwYW5kZXIoY29ydGFibGUoZCRzY2FsZSkpICMgdXNlcyBjb3JyZWxhdGlvbiBtYXRyaXggZnVuY3Rpb24gZnJvbSBhYm92ZSB0byBsb29rIGF0DQogICAgICAgICAgICAgICAgICAgICAgICAgICMgaW50ZXItaXRlbSBjb3JyZWxhdGlvbnMNCg0KYGBgDQoNCg0KIyMjIExpbmVhciByZWdyZXNzaW9uDQoNCmBgYCB7ciBpbmNsdWRlID0gVFJVRX0NCg0KbG0oeSB+IHgsIGRhdGEgPSBkYXRhKSAjIHZlcnkgYmFzaWMgbGluZWFyIHJlZ3Jlc3Npb24gZXF1YXRpb24NCmdncGxvdChkYXRhLCBhZXMoeCwgeSkpICsNCiAgZ2VvbV9wb2ludCgpICsgZ2VvbV9zbW9vdGgobWV0aG9kID0gImxtIiwgc2UgPSAwKQ0KDQpsbSh5IH4geCArIGZhY3Rvcih6KSArIHg6ZmFjdG9yKHopLCBkYXRhID0gZGF0YSkgIyBpbnRlcmFjdGlvbiBsaW5lYXIgcmVncmVzc2lvbiBlcXVhdGlvbg0KZ2dwbG90KGRhdGEsIGFlcyh4LCB5LCBjb2xvciA9IGZhY3Rvcih6KSkpICsNCiAgZ2VvbV9wb2ludCgpICsgZ2VvbV9zbW9vdGgobWV0aG9kID0gImxtIiwgc2UgPSAwKQ0KDQpgYGANCg0KDQojIyMgTG9naXN0aWMgcmVncmVzc2lvbg0KDQpgYGAge3IgaW5jbHVkZSA9IFRSVUV9DQoNCmdsbSh5IH4geCwgZGF0YSwgZmFtaWx5ID0gJ2Jpbm9taWFsJykgIyB2ZXJ5IGJhc2ljIGxvZ2lzdGljIHJlZ3Jlc3Npb24gZXF1YXRpb24NCg0KYGBgDQoNCg0KIyMjIFRlc3RzIG9mIGJhc2VsaW5lIGVxdWl2YWxlbmNlDQoNCmBgYCB7ciBpbmNsdWRlID0gVFJVRX0NCg0KYGBgDQoNCg0KIyMjIE11bHRpbGV2ZWwgbW9kZWxzIC8gSExNcw0KDQpHaXZlbiB0aGVzZSBtb2RlbHMgbmVlZCBjb250ZXh0LCBJIGFtIGluc2VydGluZyBjb2RlIGJlbG93IGZyb20gYW4gYW5hbHlzaXMgd2UgcmFuIG9uIG91ciBNQVAgVVNTRiBEZXZlbG9wbWVudCBBY2FkZW15IGRhdGEgcHJlZGljdGluZyBHb2FscyBTY29yZWQgZm9yIEF0dGFja2luZyBQbGF5ZXJzLiBXZSB3YW50ZWQgdG8gbG9vayBhdCB0aGUgcmFuZG9tIGVmZmVjdCBvZiBjbHViIG9uIHRoZSBvdXRjb21lIG9mIGdvYWxzIHNjb3JlZCBpbiB0YW5kZW0gd2l0aCBncm93dGggbWluZHNldCB2YXJpYWJsZXMgYW5kIGRlbW9ncmFwaGljIHZhcmlhYmxlcy4NCg0KYGBgIHtyIGluY2x1ZGUgPSBUUlVFfQ0KDQptb2QxIDwtIGxtZXIoR29hbHMgfiAoMXxDbHViKSxkYXRhPUF0dGFja2luZykgIyBHb2FscyBpcyBEViBhbmQgQ2x1YiBhcyBhIHJhbmRvbSBpbnRlcmNlcHQNCm1vZDIgPC0gbG1lcihHb2FscyB+IFBHTV9TICsgQ0dNX1MgKyBQR01fUzpDR01fUyArICgxfENsdWIpLGRhdGE9QXR0YWNraW5nKSAjIEdvYWxzIGlzIERWLCANCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBQbGF5ZXIgYW5kIENvYWNoDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICMgR00gaW50ZXJhY3Rpb24sDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICMgQ2x1YiBhcyByYW5kb20gaW50ZXJjZXB0DQptb2QzIDwtIGxtZXIoR29hbHMgfiBBZ2VHcm91cF9mYWMgKyB1cm0gKyAoMXxDbHViKSxkYXRhPUF0dGFja2luZykgIyBHb2FscyBpcyBEViwgDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIyBBZ2UgR3JvdXAgYW5kIEV0aG5pY2l0eQ0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICMgYW5hbHl6ZWQgYXMgZGVtb2dyYXBoaWNzLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICMgQ2x1YiBhcyByYW5kb20gaW50ZXJjZXB0DQptb2Q0IDwtIGxtZXIoR29hbHMgfiBQR01fUyArIENHTV9TICsgUEdNX1M6Q0dNX1MgKyBBZ2VHcm91cF9mYWMgKyB1cm0gKyAoMXxDbHViKSwgZGF0YT1BdHRhY2tpbmcpDQogICAgIyBDb21iaW5lZCBtb2RlbDogR29hbHMgaXMgRFYsIFBsYXllciBhbmQgQ29hY2ggR00gaW50ZXJhY3Rpb24sIEFnZSBHcm91cCBhbmQgRXRobmljaXR5DQogICAgIyBpbmNsdWRlZCwgQ2x1YiBhcyByYW5kb20gaW50ZXJjZXB0DQoNCmh0bWxyZWcobGlzdChtb2QxLG1vZDIsbW9kMyxtb2Q0KSwNCiAgICAgICAgDQogICAgICAgICMgdGhpcyBhZGRzIGEgc3ltYm9sIGZvciBtYXJnaW5hbCBzaWduaWZpY2FuY2UNCiAgICAgICAgc3RhcnM9IGMoMC4wMDEsIDAuMDEsIDAuMDUsIDAuMSksDQogICAgICAgIGN1c3RvbS5jb2VmLm5hbWVzID0gYygiSW50ZXJjZXB0IiwiUGxheWVyIEdNICh6KSIsICJDb2FjaCBHTSAoeikiLCANCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJQbGF5ZXItQ29hY2ggR00gSW50ZXJhY3Rpb24iLCAiVS0xNCIsIlUtMTUiLCJVLTE2LzE3IiwNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJVLTE4LzE5IiwiVVJNIiksDQogICAgICAgIGN1c3RvbS5tb2RlbC5uYW1lcyA9IGMoIkJhc2UgTW9kZWwiLCJHcm93dGggTWluZHNldCIsIkRlbW9ncmFwaGljcyIsIkJvdGgiKSwNCiAgICAgICAgY2FwdGlvbj0iR3Jvd3RoIE1pbmRzZXQgUHJlZGljdGluZyBHb2FscyBTY29yZWQgZm9yIEF0dGFja2VycyIpDQoNCg0KYGBgDQoNCg0KIyMjIFJlc3BvbnNlIHN1cmZhY2UgYW5hbHlzaXMNCg0KYGBgIHtyIGluY2x1ZGUgPSBUUlVFfQ0KDQoNCmBgYA0KDQoNCiMjIyBDbHVzdGVyIGFuYWx5c2lzDQoNCmBgYCB7ciBpbmNsdWRlID0gVFJVRX0NCg0KYGBgDQoNCg0KIyMjIE11bHRpZ3JvdXAgYW5hbHlzaXMgKHRlc3RpbmcgaW5kaXJlY3QgZWZmZWN0cyBpbiBhIHBhdGggbW9kZWwgZm9yIGRpZmZlcmVudCBkZW1vZ3JhcGhpYyBncm91cHMpDQoNCmBgYCB7ciBpbmNsdWRlID0gVFJVRX0NCg0KYGBgDQoNCg0KIyMjIFByb2ZpbGUgYW5hbHlzaXMNCg0KYGBgIHtyIGluY2x1ZGUgPSBUUlVFfQ0KDQpgYGANCg0KDQojIyMgUG93ZXIgYW5hbHlzaXMNCg0KYGBgIHtyIGluY2x1ZGUgPSBUUlVFfQ0KDQpgYGANCg0KDQojIyMgQmF5ZXNpYW4gcHJlZGljdGl2ZSBtb2RlbHMNCg0KYGBgIHtyIGluY2x1ZGUgPSBUUlVFfQ0KDQpgYGANCg0KDQojIyMgTWVkaWF0aW9uL21vZGVyYXRpb24gYW5hbHlzaXMNCg0KYGBgIHtyIGluY2x1ZGUgPSBUUlVFfQ0KDQpgYGANCg0KDQojIyMgUHJvcGVuc2l0eSBzY29yZSBtYXRjaGluZw0KDQpgYGAge3IgaW5jbHVkZSA9IFRSVUV9DQoNCmBgYA0KDQoNCiMjIyBDcmVhdGluZyBhIGNvbG9yIHNjaGVtZSB0byBtYXRjaCBvdXIgTUwgYnJhbmRpbmcgYW5kIHVzZSBpbiBvdXIgZ3JhcGhzDQoNCmBgYCB7ciBpbmNsdWRlID0gVFJVRX0NCg0KYGBgDQoNCg0KDQo=</div>
 
 
 
