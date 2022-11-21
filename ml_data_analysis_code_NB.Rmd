@@ -29,7 +29,7 @@ source(simulate-data.R)
 
 ## Data Analysis
 
-### ANOVAs with post-hocs
+### ANOVAs with Tukey HSD post-hocs
 
 ``` {r include = TRUE}
 
@@ -38,6 +38,14 @@ pander(summary(dv_gv_AOV))                         # and gv is the group variabl
 TukeyHSD(dv_gv_AOV)
 
 pander(summarySE(d, groupvar="gv", measurevar="dv",na.rm=TRUE),round=2)
+
+```
+
+### Factorial ANOVAs with other post-hoc corrections
+
+``` {r include = TRUE}
+
+
 
 ```
 
