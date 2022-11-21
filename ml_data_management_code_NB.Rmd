@@ -1,0 +1,41 @@
+---
+title: "ML Data Management Code"
+output: html_notebook
+---
+# ML Data Management Code
+
+## Intro
+
+This is the R Notebook for our ML Data Management Code. We originally worked on this in an RScript, but will now use an R Notebook for it. The data used in this file will come from a simulated dataset.
+
+## Download packages
+
+``` {r include = FALSE}
+library(tidyverse) # for data management
+library(psych) # to analyze data and descriptive statistics
+library(ggplot2) # to make some nice graphs
+library(pander) # to make some clean tables
+
+```
+
+## Load in RScript where functions are created
+
+``` {r include = TRUE}
+
+#source(__.R)
+
+```
+
+## Download Simulated Data
+
+``` {r include = TRUE}
+
+source(simulate-data.R)
+
+```
+
+
+## Data Management
+
+
+
