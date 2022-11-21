@@ -1800,11 +1800,300 @@ source(simulate-data.R)
 </div>
 <div id="data-management" class="section level2">
 <h2>Data Management</h2>
+<div id="merging-data-across-time-points" class="section level3">
+<h3>Merging data across time points</h3>
+<div id="zach-method-a" class="section level4">
+<h4>Zach Method A</h4>
+<p>Built in studying the use case of needing to bind and merge different
+datasets that had different elements of missing data in each. This also
+works to bind datasets together.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIGNyZWF0ZSBkdW1teSBkYXRhXG54X3ByZSA8LSBkYXRhLmZyYW1lKHAgPSBjKDEsIDIsIDMpLCBhID0gYygxLCAyLCAzKSwgYiA9IGMoNCwgNSwgNiksIGQgPSBjKDMsIDQsIDUpKVxueF9wb3N0IDwtIGRhdGEuZnJhbWUocCA9IGMoMSwgMiwgMyksIGEgPSBjKDUsIDIsIDkpLCBjID0gYyg0LCA1LCA2KSlcbnlfcHJlIDwtIGRhdGEuZnJhbWUocCA9IGMoNCwgNSwgNiksIGIgPSBjKDEsIDIsIDMpLCBjID0gYyg0LCA1LCA2KSlcbnlfcG9zdCA8LSBkYXRhLmZyYW1lKHAgPSBjKDQsIDUsIDYpLCBiID0gYygxLCAyLCAzKSwgZCA9IGMoNCwgNSwgNiksIGUgPSBjKDEsIDIsIDMpKVxuXG5cbiMgbWFrZSBmdW5jdGlvblxubXlfZnVuIDwtIGZ1bmN0aW9uKGRmKXtcbiAgZGZfbmFtZSA8LSBkZXBhcnNlKHN1YnN0aXR1dGUoZGYpKVxuICBpZiAoZ3JlcGwoXCJwcmVcIiwgZGZfbmFtZSkpIHtcbiAgICBjb2xuYW1lcyhkZilbLTFdIDwtIHBhc3RlKGNvbG5hbWVzKGRmKVstMV0sIFwidDFcIiwgc2VwID0gXCJfXCIpIFxuICB9XG4gIGVsc2UgaWYgKGdyZXBsKFwicG9zdFwiLCBkZl9uYW1lKSkge1xuICAgIGNvbG5hbWVzKGRmKVstMV0gPC0gcGFzdGUoY29sbmFtZXMoZGYpWy0xXSwgXCJ0MlwiLCBzZXAgPSBcIl9cIilcbiAgfVxuICByZXR1cm4oZGYpXG59XG5cbiMgY3JlYXRlIGEgbGlzdCBvZiBkYXRhIGZyYW1lc1xubXlfbGlzdCA8LSBsaXN0KHhfcHJlID0geF9wcmUsIHhfcG9zdCA9IHhfcG9zdCxcbiAgICAgICAgICAgICAgICB5X3ByZSA9IHlfcHJlLCB5X3Bvc3QgPSB5X3Bvc3QpXG5cbiMgZm9yIGxvb3AgdGhyb3VnaCBsaXN0XG5mb3IgKGkgaW4gc2VxX2Fsb25nKG15X2xpc3QpKSB7XG4gIGRmX25hbWUgPC0gbmFtZXMobXlfbGlzdClbaV1cbiAgaWYgKGdyZXBsKFwicHJlXCIsIGRmX25hbWUpKSB7XG4gICAgY29sbmFtZXMobXlfbGlzdFtbaV1dKVstMV0gPC0gcGFzdGUoY29sbmFtZXMobXlfbGlzdFtbaV1dKVstMV0sIFwidDFcIiwgc2VwID0gXCJfXCIpIFxuICB9XG4gIGVsc2UgaWYgKGdyZXBsKFwicG9zdFwiLCBkZl9uYW1lKSkge1xuICAgIGNvbG5hbWVzKG15X2xpc3RbW2ldXSlbLTFdIDwtIHBhc3RlKGNvbG5hbWVzKG15X2xpc3RbW2ldXSlbLTFdLCBcInQyXCIsIHNlcCA9IFwiX1wiKVxuICB9XG59XG5cbmBgYCJ9 -->
+<pre class="r"><code>
+# create dummy data
+x_pre &lt;- data.frame(p = c(1, 2, 3), a = c(1, 2, 3), b = c(4, 5, 6), d = c(3, 4, 5))
+x_post &lt;- data.frame(p = c(1, 2, 3), a = c(5, 2, 9), c = c(4, 5, 6))
+y_pre &lt;- data.frame(p = c(4, 5, 6), b = c(1, 2, 3), c = c(4, 5, 6))
+y_post &lt;- data.frame(p = c(4, 5, 6), b = c(1, 2, 3), d = c(4, 5, 6), e = c(1, 2, 3))
+
+
+# make function
+my_fun &lt;- function(df){
+  df_name &lt;- deparse(substitute(df))
+  if (grepl(&quot;pre&quot;, df_name)) {
+    colnames(df)[-1] &lt;- paste(colnames(df)[-1], &quot;t1&quot;, sep = &quot;_&quot;) 
+  }
+  else if (grepl(&quot;post&quot;, df_name)) {
+    colnames(df)[-1] &lt;- paste(colnames(df)[-1], &quot;t2&quot;, sep = &quot;_&quot;)
+  }
+  return(df)
+}
+
+# create a list of data frames
+my_list &lt;- list(x_pre = x_pre, x_post = x_post,
+                y_pre = y_pre, y_post = y_post)
+
+# for loop through list
+for (i in seq_along(my_list)) {
+  df_name &lt;- names(my_list)[i]
+  if (grepl(&quot;pre&quot;, df_name)) {
+    colnames(my_list[[i]])[-1] &lt;- paste(colnames(my_list[[i]])[-1], &quot;t1&quot;, sep = &quot;_&quot;) 
+  }
+  else if (grepl(&quot;post&quot;, df_name)) {
+    colnames(my_list[[i]])[-1] &lt;- paste(colnames(my_list[[i]])[-1], &quot;t2&quot;, sep = &quot;_&quot;)
+  }
+}
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="zach-method-b" class="section level4">
+<h4>Zach Method B</h4>
+<p>Alternative approach (probably better). Uses anonymous function and
+map</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIHJlLWNyZWF0ZSB0aGUgaW5pdGlhbCBsaXN0IG9mIGRhdGEgZnJhbWVzXG5teV9saXN0IDwtIGxpc3QoeF9wcmUgPSB4X3ByZSwgeF9wb3N0ID0geF9wb3N0LFxuICAgICAgICAgICAgICAgIHlfcHJlID0geV9wcmUsIHlfcG9zdCA9IHlfcG9zdClcblxubXlfbGlzdCA8LSBNYXAoXG4gIGZ1bmN0aW9uKGxpc3RfZGYsIGxpc3RfbmFtZXMpIHtcbiAgICBpZiAoZW5kc1dpdGgobGlzdF9uYW1lcywgXCJwcmVcIikpIHtcbiAgICAgIG5hbWVzKGxpc3RfZGYpWy0xXSA8LSBwYXN0ZShuYW1lcyhsaXN0X2RmKVstMV0sIFwidDFcIiwgc2VwID0gXCJfXCIpXG4gICAgfSBcbiAgICBlbHNlIGlmIChlbmRzV2l0aChsaXN0X25hbWVzLCBcInBvc3RcIikpIHtcbiAgICAgIG5hbWVzKGxpc3RfZGYpWy0xXSA8LSBwYXN0ZShuYW1lcyhsaXN0X2RmKVstMV0sIFwidDJcIiwgc2VwID0gXCJfXCIpXG4gICAgfVxuICAgIGxpc3RfZGZcbiAgfSwgXG4gIG15X2xpc3QsIFxuICBuYW1lcyhteV9saXN0KVxuKVxuXG4jbWVyZ2UgYWxsIGRhdGEgZnJhbWVzIHRvZ2V0aGVyXG5maW5hbF9wcm9kdWN0IDwtIG15X2xpc3QgJT4lIFxuICByZWR1Y2UoZnVsbF9qb2luKVxuICBcbmBgYCJ9 -->
+<pre class="r"><code>
+# re-create the initial list of data frames
+my_list &lt;- list(x_pre = x_pre, x_post = x_post,
+                y_pre = y_pre, y_post = y_post)
+
+my_list &lt;- Map(
+  function(list_df, list_names) {
+    if (endsWith(list_names, &quot;pre&quot;)) {
+      names(list_df)[-1] &lt;- paste(names(list_df)[-1], &quot;t1&quot;, sep = &quot;_&quot;)
+    } 
+    else if (endsWith(list_names, &quot;post&quot;)) {
+      names(list_df)[-1] &lt;- paste(names(list_df)[-1], &quot;t2&quot;, sep = &quot;_&quot;)
+    }
+    list_df
+  }, 
+  my_list, 
+  names(my_list)
+)
+
+#merge all data frames together
+final_product &lt;- my_list %&gt;% 
+  reduce(full_join)
+  </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="matt-method-before-zach-method" class="section level4">
+<h4>Matt Method (before Zach method)</h4>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIyBub3Qgc2hvd24gaGVyZSwgYnV0IHR5cGljYWxseSBuZWVkIHRvIGNsZWFuIGRhdGFzZXQgYmVmb3JlIG1lcmdpbmdcblxubWVyZ2VkX2RhdGEgPC0gZGF0YV9wcmUgJT4lIGZ1bGxfam9pbihkYXRhX3Bvc3QsIGJ5ID0gYyhcInhcIiksIHN1ZmZpeCA9IGMoXCJfcHJlXCIsIFwiX3Bvc3RcIikpXG5cbiMjIG5vdCBzaG93biBoZXJlLCBidXQgdHlwaWNhbGx5IG5lZWQgdG8gcmV2aWV3IHRoZSBtZXJnZWQgY29sdW1uIGFuZCBkbyBhZGRpdGlvbmFsIGNsZWFuaW5nXG5cbmBgYCJ9 -->
+<pre class="r"><code>
+## not shown here, but typically need to clean dataset before merging
+
+merged_data &lt;- data_pre %&gt;% full_join(data_post, by = c(&quot;x&quot;), suffix = c(&quot;_pre&quot;, &quot;_post&quot;))
+
+## not shown here, but typically need to review the merged column and do additional cleaning
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="subsetting-a-dataset" class="section level3">
+<h3>Subsetting a dataset</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIFNlbGVjdGluZyBjZXJ0YWluIHJvd3Ncblxuc3Vic2V0IDwtIGRhdGFbYygyMjo2MCksXVxuXG4jIFNlbGVjdGluZyBjZXJ0YWluIGNvbHVtbnNcblxuc3Vic2V0IDwtIGRhdGFbLGMoODoyNyldXG5cbiMjIFRoaXMgdGVjaG5pcXVlIGNhbiBiZSB1c2VkIHRvIGRlbGV0ZSBhIHNldCBvZiBjb2x1bW5zXG5cbmRhdGFfMSA8LSBkcGx5cjo6c2VsZWN0KGRhdGEsIC1jb2x1bW4xOi1jb2x1bW4xOClcblxuIyBGaWx0ZXJpbmcgZm9yIGEgY2VydGFpbiByZXNwb25zZSBvciBncm91cFxuXG5uZXdkYXRhIDwtIGRhdGEgJT4lIGZpbHRlcih2YXIxID09IDEgfCB2YXIyID09IDEpXG5uZXdkYXRhIDwtIGRhdGEgJT4lIGZpbHRlcih2YXIxID09IDEgJiB2YXIyID09IDEpXG5uZXdkYXRhIDwtIGRhdGEgJT4lIGZpbHRlcih2YXIxID09IFwidmFsdWVcIiAmIHZhcjIgPT0gXCJ2YWx1ZVwiKVxuXG5gYGAifQ== -->
+<pre class="r"><code>
+# Selecting certain rows
+
+subset &lt;- data[c(22:60),]
+
+# Selecting certain columns
+
+subset &lt;- data[,c(8:27)]
+
+## This technique can be used to delete a set of columns
+
+data_1 &lt;- dplyr::select(data, -column1:-column18)
+
+# Filtering for a certain response or group
+
+newdata &lt;- data %&gt;% filter(var1 == 1 | var2 == 1)
+newdata &lt;- data %&gt;% filter(var1 == 1 &amp; var2 == 1)
+newdata &lt;- data %&gt;% filter(var1 == &quot;value&quot; &amp; var2 == &quot;value&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="binding-data-together-from-various-cohorts-surveys" class="section level3">
+<h3>Binding data together from various cohorts / surveys</h3>
+<p>Matt’s very laborious way of binding data together</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIyBTZWxlY3QgYWxsIG9mIHRoZSBjb2x1bW5zIGluIHRoZSBkYXRhc2V0cyB0byBtYWtlIHN1cmUgdGhleSBhcmUgYWxsIHRoZSBzYW1lIFxuIyMgYW5kIGhhdmUgdGhlIHNhbWUgbmFtZXMgdXNpbmcgZHBseXI6OnNlbGVjdCgpLiBUaGVuLCB0dXJuIHRoZW0gYWxsIGludG8gZGF0YSB0YWJsZXMuXG5cbmRhdGExIDwtIGFzLmRhdGEudGFibGUoZGF0YTEpXG5cbiMjIE5leHQsIGZpeCBhbGwgb2YgdGhlIHZhcmlhYmxlIHR5cGVzIHRvIG1ha2Ugc3VyZSB0aGUgdmFyaWFibGUgdHlwZXMgaW4gZWFjaCBkYXRhc2V0XG4jIyBpcyBhbGlnbmVkLiBGb3IgZXhhbXBsZS4uLlxuXG5kYXRhMSR2MSA8LSBhcy5jaGFyYWN0ZXIoZGF0YTEkdjEpXG5kYXRhMSR2MiA8LSBhcy5pbnRlZ2VyKGRhdGExJHYyKVxuZGF0YTIkdjEgPC0gYXMuY2hhcmFjdGVyKGRhdGEyJHYxKVxuZGF0YTIkdjIgPC0gYXMuaW50ZWdlcihkYXRhMiR2MilcblxuIyMgVGhlbiwgYmluZCB0aGUgZGF0YXNldHNcblxuZGF0YSA8LSBmdW5pb24oZGF0YTEsIGRhdGEyKVxuXG5gYGAifQ== -->
+<pre class="r"><code>
+## Select all of the columns in the datasets to make sure they are all the same 
+## and have the same names using dplyr::select(). Then, turn them all into data tables.
+
+data1 &lt;- as.data.table(data1)
+
+## Next, fix all of the variable types to make sure the variable types in each dataset
+## is aligned. For example...
+
+data1$v1 &lt;- as.character(data1$v1)
+data1$v2 &lt;- as.integer(data1$v2)
+data2$v1 &lt;- as.character(data2$v1)
+data2$v2 &lt;- as.integer(data2$v2)
+
+## Then, bind the datasets
+
+data &lt;- funion(data1, data2)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="creating-scale-variables" class="section level3">
+<h3>Creating scale variables</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5kYXRhIDwtIGRhdGEgJT4lIFxuICBtdXRhdGUobHYxID0gKCh2MSArIHYyICsgdjMpIC8gMykpICU+JVxuICBtdXRhdGUobHYyID0gKCh2NCArIHY1ICsgdjYpIC8gMykpICU+JVxuICBtdXRhdGUobHYzID0gKCh2NyArIHY4ICsgdjkgKyB2MTAgKyB2MTEpIC8gNSkpXG5cbmBgYCJ9 -->
+<pre class="r"><code>
+data &lt;- data %&gt;% 
+  mutate(lv1 = ((v1 + v2 + v3) / 3)) %&gt;%
+  mutate(lv2 = ((v4 + v5 + v6) / 3)) %&gt;%
+  mutate(lv3 = ((v7 + v8 + v9 + v10 + v11) / 5))
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="analyzing-descriptive-statistics-of-all-items-to-see-if-there-are-any-issue-with-direction-or-values-or-other-factors-data-checking-guidelines" class="section level3">
+<h3>Analyzing descriptive statistics of all items to see if there are
+any issue with direction or values or other factors → data checking
+guidelines</h3>
+<div id="quick-way-to-look-at-means-and-sds" class="section level4">
+<h4>Quick way to look at means and SDs</h4>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG50YWJsZSA8LSBkYXRhW2MoXCJ2MVwiLCBcInYyXCIsIFwidjNcIiwgXCJ2NFwiLCBcInY1XCIpXVxuXG50YWJsZSAlPiUgdGJsX3N1bW1hcnkoc3RhdGlzdGljID0gbGlzdChhbGxfY29udGludW91cygpIH4gXCJ7bWVhbn0gKHtzZH0pXCIpLCBcbiAgICAgICAgICAgICAgICAgICAgICAgdHlwZSA9IGxpc3QodjEgfiAnY29udGludW91cycsXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHYyIH4gJ2NvbnRpbnVvdXMnLCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdjMgfiAnY29udGludW91cycsXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHY0IH4gJ2NvbnRpbnVvdXMnLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB2NSB+ICdjb250aW51b3VzJyksXG4gICAgICAgICAgICAgICAgICAgICAgIGRpZ2l0cyA9IGFsbF9jb250aW51b3VzKCkgfiAyLFxuICAgICAgICAgICAgICAgICAgICAgICBtaXNzaW5nX3RleHQgPSBcIihNaXNzaW5nKVwiKVxuXG5gYGAifQ== -->
+<pre class="r"><code>
+table &lt;- data[c(&quot;v1&quot;, &quot;v2&quot;, &quot;v3&quot;, &quot;v4&quot;, &quot;v5&quot;)]
+
+table %&gt;% tbl_summary(statistic = list(all_continuous() ~ &quot;{mean} ({sd})&quot;), 
+                       type = list(v1 ~ &#39;continuous&#39;,
+                                   v2 ~ &#39;continuous&#39;, 
+                                   v3 ~ &#39;continuous&#39;,
+                                   v4 ~ &#39;continuous&#39;,
+                                   v5 ~ &#39;continuous&#39;),
+                       digits = all_continuous() ~ 2,
+                       missing_text = &quot;(Missing)&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="more-detailed-way-to-look-at-descriptives" class="section level4">
+<h4>More detailed way to look at descriptives</h4>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5iMTwtIHN1bW1hcnlTRShkYXRhLCBtZWFzdXJldmFyPVwic2NhbGVcIiwgbmEucm09VFJVRSlcbmIyPC0gc3VtbWFyeVNFKGRhdGEsIG1lYXN1cmV2YXI9XCJ2MVwiLCBuYS5ybT1UUlVFKVxuYjM8LSBzdW1tYXJ5U0UoZGF0YSwgbWVhc3VyZXZhcj1cInYyXCIsIG5hLnJtPVRSVUUpXG5iNDwtIHN1bW1hcnlTRShkYXRhLCBtZWFzdXJldmFyPVwidjNcIiwgbmEucm09VFJVRSlcbmI1PC0gc3VtbWFyeVNFKGRhdGEsIG1lYXN1cmV2YXI9XCJ2NFwiLCBuYS5ybT1UUlVFKVxuYjY8LSBzdW1tYXJ5U0UoZGF0YSwgbWVhc3VyZXZhcj1cInY1XCIsIG5hLnJtPVRSVUUpXG5cbiNOb3csIHdlJ3JlIGdvaW5nIHRvIHJlbmFtZSB0aGUgbWVhbiAodGhlIDNyZCB2YXJpYWJsZSkgdG8gYWN0dWFsbHkgYmUgY2FsbGVkIG1lYW5cbm5hbWVzKGIxKVszXSA8LSBcIm1lYW5cIlxubmFtZXMoYjIpWzNdIDwtIFwibWVhblwiXG5uYW1lcyhiMylbM10gPC0gXCJtZWFuXCJcbm5hbWVzKGI0KVszXSA8LSBcIm1lYW5cIlxubmFtZXMoYjUpWzNdIDwtIFwibWVhblwiXG5uYW1lcyhiNilbM10gPC0gXCJtZWFuXCJcblxuIyBOb3cgd2UgYXJlIGFkZGluZyBhIHZhcmlhYmxlIHRoYXQgaXMgdGhlIGl0ZW0gdGV4dCBmb3Igd2hhdCB3ZSdyZSBsb29raW5nIGF0XG5iMSR2YXJpYWJsZSA8LSBcIlNjYWxlXCJcbmIyJHZhcmlhYmxlIDwtIFwiSXRlbSAxXCJcbmIzJHZhcmlhYmxlIDwtIFwiSXRlbSAyXCJcbmI0JHZhcmlhYmxlIDwtIFwiSXRlbSAzXCJcbmI1JHZhcmlhYmxlIDwtIFwiSXRlbSA0XCJcbmI2JHZhcmlhYmxlIDwtIFwiSXRlbSA1XCJcblxuXG4jIE5vdyB3ZSBhcmUgYWRkaW5nIGEgdmFyaWFibGUgdGhhdCBpcyB0aGUgbmFtZSBvZiB3aGF0IHdlJ3JlIGxvb2tpbmcgYXRcbmIxJFR5cGUgPC0gXCJTY2FsZVwiXG5iMiRUeXBlIDwtIFwiSXRlbSAxXCJcbmIzJFR5cGUgPC0gXCJJdGVtIDJcIlxuYjQkVHlwZSA8LSBcIkl0ZW0gM1wiXG5iNSRUeXBlIDwtIFwiSXRlbSA0XCJcbmI2JFR5cGUgPC0gXCJJdGVtIDVcIlxuXG5cbiMgQmluZCB0aGVtIGFsbCB0b2dldGhlciFcblxuYiA8LSByYmluZChiMSxiMixiMyxiNCxiNSxiNilcblxuIyBDcmVhdGUgdGFibGVcblxucGFuZGVyKGJbYyg3LDI6NildLCBjYXB0aW9uPVwiVGFibGUgZm9yIFNjYWxlIGFuZCBJdGVtc1wiLGp1c3RpZnk9XCJsZWZ0XCIscm91bmQ9MilcblxuYGBgIn0= -->
+<pre class="r"><code>
+b1&lt;- summarySE(data, measurevar=&quot;scale&quot;, na.rm=TRUE)
+b2&lt;- summarySE(data, measurevar=&quot;v1&quot;, na.rm=TRUE)
+b3&lt;- summarySE(data, measurevar=&quot;v2&quot;, na.rm=TRUE)
+b4&lt;- summarySE(data, measurevar=&quot;v3&quot;, na.rm=TRUE)
+b5&lt;- summarySE(data, measurevar=&quot;v4&quot;, na.rm=TRUE)
+b6&lt;- summarySE(data, measurevar=&quot;v5&quot;, na.rm=TRUE)
+
+#Now, we&#39;re going to rename the mean (the 3rd variable) to actually be called mean
+names(b1)[3] &lt;- &quot;mean&quot;
+names(b2)[3] &lt;- &quot;mean&quot;
+names(b3)[3] &lt;- &quot;mean&quot;
+names(b4)[3] &lt;- &quot;mean&quot;
+names(b5)[3] &lt;- &quot;mean&quot;
+names(b6)[3] &lt;- &quot;mean&quot;
+
+# Now we are adding a variable that is the item text for what we&#39;re looking at
+b1$variable &lt;- &quot;Scale&quot;
+b2$variable &lt;- &quot;Item 1&quot;
+b3$variable &lt;- &quot;Item 2&quot;
+b4$variable &lt;- &quot;Item 3&quot;
+b5$variable &lt;- &quot;Item 4&quot;
+b6$variable &lt;- &quot;Item 5&quot;
+
+
+# Now we are adding a variable that is the name of what we&#39;re looking at
+b1$Type &lt;- &quot;Scale&quot;
+b2$Type &lt;- &quot;Item 1&quot;
+b3$Type &lt;- &quot;Item 2&quot;
+b4$Type &lt;- &quot;Item 3&quot;
+b5$Type &lt;- &quot;Item 4&quot;
+b6$Type &lt;- &quot;Item 5&quot;
+
+
+# Bind them all together!
+
+b &lt;- rbind(b1,b2,b3,b4,b5,b6)
+
+# Create table
+
+pander(b[c(7,2:6)], caption=&quot;Table for Scale and Items&quot;,justify=&quot;left&quot;,round=2)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+</div>
+<div id="handling-missing-data" class="section level3">
+<h3>Handling missing data</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="handling-duplicates" class="section level3">
+<h3>Handling duplicates</h3>
+<p>In this line, we need to identify which variable should not have
+duplicates to then select it when we remove duplicates</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5kYXRhIDwtIGRhdGFbIWR1cGxpY2F0ZWQoZGF0YSR2MSksXVxuXG5gYGAifQ== -->
+<pre class="r"><code>
+data &lt;- data[!duplicated(data$v1),]
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="identifying-and-removing-outliers" class="section level3">
+<h3>Identifying and removing outliers</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="reverse-scoring-items" class="section level3">
+<h3>Reverse scoring items</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5kYXRhJHYxUiA8LSA3IC0gZGF0YSR2MVxuZGF0YSR2MlIgPC0gNyAtIGRhdGEkdjJcblxuYGBgIn0= -->
+<pre class="r"><code>
+data$v1R &lt;- 7 - data$v1
+data$v2R &lt;- 7 - data$v2
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
 </div>
+</div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIk1MIERhdGEgTWFuYWdlbWVudCBDb2RlIg0Kb3V0cHV0OiBodG1sX25vdGVib29rDQotLS0NCiMgTUwgRGF0YSBNYW5hZ2VtZW50IENvZGUNCg0KIyMgSW50cm8NCg0KVGhpcyBpcyB0aGUgUiBOb3RlYm9vayBmb3Igb3VyIE1MIERhdGEgTWFuYWdlbWVudCBDb2RlLiBXZSBvcmlnaW5hbGx5IHdvcmtlZCBvbiB0aGlzIGluIGFuIFJTY3JpcHQsIGJ1dCB3aWxsIG5vdyB1c2UgYW4gUiBOb3RlYm9vayBmb3IgaXQuIFRoZSBkYXRhIHVzZWQgaW4gdGhpcyBmaWxlIHdpbGwgY29tZSBmcm9tIGEgc2ltdWxhdGVkIGRhdGFzZXQuDQoNCiMjIERvd25sb2FkIHBhY2thZ2VzDQoNCmBgYCB7ciBpbmNsdWRlID0gRkFMU0V9DQpsaWJyYXJ5KHRpZHl2ZXJzZSkgIyBmb3IgZGF0YSBtYW5hZ2VtZW50DQpsaWJyYXJ5KHBzeWNoKSAjIHRvIGFuYWx5emUgZGF0YSBhbmQgZGVzY3JpcHRpdmUgc3RhdGlzdGljcw0KbGlicmFyeShnZ3Bsb3QyKSAjIHRvIG1ha2Ugc29tZSBuaWNlIGdyYXBocw0KbGlicmFyeShwYW5kZXIpICMgdG8gbWFrZSBzb21lIGNsZWFuIHRhYmxlcw0KDQpgYGANCg0KIyMgTG9hZCBpbiBSU2NyaXB0IHdoZXJlIGZ1bmN0aW9ucyBhcmUgY3JlYXRlZA0KDQpgYGAge3IgaW5jbHVkZSA9IFRSVUV9DQoNCiNzb3VyY2UoX18uUikNCg0KYGBgDQoNCiMjIERvd25sb2FkIFNpbXVsYXRlZCBEYXRhDQoNCmBgYCB7ciBpbmNsdWRlID0gVFJVRX0NCg0Kc291cmNlKHNpbXVsYXRlLWRhdGEuUikNCg0KYGBgDQoNCg0KIyMgRGF0YSBNYW5hZ2VtZW50DQoNCg0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIk1MIERhdGEgTWFuYWdlbWVudCBDb2RlIg0Kb3V0cHV0OiBodG1sX25vdGVib29rDQotLS0NCiMgTUwgRGF0YSBNYW5hZ2VtZW50IENvZGUNCg0KIyMgSW50cm8NCg0KVGhpcyBpcyB0aGUgUiBOb3RlYm9vayBmb3Igb3VyIE1MIERhdGEgTWFuYWdlbWVudCBDb2RlLiBXZSBvcmlnaW5hbGx5IHdvcmtlZCBvbiB0aGlzIGluIGFuIFJTY3JpcHQsIGJ1dCB3aWxsIG5vdyB1c2UgYW4gUiBOb3RlYm9vayBmb3IgaXQuIFRoZSBkYXRhIHVzZWQgaW4gdGhpcyBmaWxlIHdpbGwgY29tZSBmcm9tIGEgc2ltdWxhdGVkIGRhdGFzZXQuDQoNCiMjIERvd25sb2FkIHBhY2thZ2VzDQoNCmBgYCB7ciBpbmNsdWRlID0gRkFMU0V9DQpsaWJyYXJ5KHRpZHl2ZXJzZSkgIyBmb3IgZGF0YSBtYW5hZ2VtZW50DQpsaWJyYXJ5KHBzeWNoKSAjIHRvIGFuYWx5emUgZGF0YSBhbmQgZGVzY3JpcHRpdmUgc3RhdGlzdGljcw0KbGlicmFyeShnZ3Bsb3QyKSAjIHRvIG1ha2Ugc29tZSBuaWNlIGdyYXBocw0KbGlicmFyeShwYW5kZXIpICMgdG8gbWFrZSBzb21lIGNsZWFuIHRhYmxlcw0KbGlicmFyeShndHN1bW1hcnkpICMgdG8gbWFrZSBzb21lIGNvb2wgc3VtbWFyeSB0YWJsZXMgdGhhdCBmaXQgQVBBIGZvcm1hdA0KDQpgYGANCg0KIyMgTG9hZCBpbiBSU2NyaXB0IHdoZXJlIGZ1bmN0aW9ucyBhcmUgY3JlYXRlZA0KDQpgYGAge3IgaW5jbHVkZSA9IFRSVUV9DQoNCiNzb3VyY2UoX18uUikNCg0KYGBgDQoNCiMjIERvd25sb2FkIFNpbXVsYXRlZCBEYXRhDQoNCmBgYCB7ciBpbmNsdWRlID0gVFJVRX0NCg0Kc291cmNlKHNpbXVsYXRlLWRhdGEuUikNCg0KYGBgDQoNCg0KIyMgRGF0YSBNYW5hZ2VtZW50DQoNCiMjIyBNZXJnaW5nIGRhdGEgYWNyb3NzIHRpbWUgcG9pbnRzDQoNCiMjIyMgWmFjaCBNZXRob2QgQSANCg0KQnVpbHQgaW4gc3R1ZHlpbmcgdGhlIHVzZSBjYXNlIG9mIG5lZWRpbmcgdG8gYmluZCBhbmQgbWVyZ2UgZGlmZmVyZW50IGRhdGFzZXRzIHRoYXQgaGFkIGRpZmZlcmVudCBlbGVtZW50cyBvZiBtaXNzaW5nIGRhdGEgaW4gZWFjaC4gVGhpcyBhbHNvIHdvcmtzIHRvIGJpbmQgZGF0YXNldHMgdG9nZXRoZXIuDQoNCmBgYCB7ciBpbmNsdWRlID0gVFJVRX0NCg0KIyBjcmVhdGUgZHVtbXkgZGF0YQ0KeF9wcmUgPC0gZGF0YS5mcmFtZShwID0gYygxLCAyLCAzKSwgYSA9IGMoMSwgMiwgMyksIGIgPSBjKDQsIDUsIDYpLCBkID0gYygzLCA0LCA1KSkNCnhfcG9zdCA8LSBkYXRhLmZyYW1lKHAgPSBjKDEsIDIsIDMpLCBhID0gYyg1LCAyLCA5KSwgYyA9IGMoNCwgNSwgNikpDQp5X3ByZSA8LSBkYXRhLmZyYW1lKHAgPSBjKDQsIDUsIDYpLCBiID0gYygxLCAyLCAzKSwgYyA9IGMoNCwgNSwgNikpDQp5X3Bvc3QgPC0gZGF0YS5mcmFtZShwID0gYyg0LCA1LCA2KSwgYiA9IGMoMSwgMiwgMyksIGQgPSBjKDQsIDUsIDYpLCBlID0gYygxLCAyLCAzKSkNCg0KDQojIG1ha2UgZnVuY3Rpb24NCm15X2Z1biA8LSBmdW5jdGlvbihkZil7DQogIGRmX25hbWUgPC0gZGVwYXJzZShzdWJzdGl0dXRlKGRmKSkNCiAgaWYgKGdyZXBsKCJwcmUiLCBkZl9uYW1lKSkgew0KICAgIGNvbG5hbWVzKGRmKVstMV0gPC0gcGFzdGUoY29sbmFtZXMoZGYpWy0xXSwgInQxIiwgc2VwID0gIl8iKSANCiAgfQ0KICBlbHNlIGlmIChncmVwbCgicG9zdCIsIGRmX25hbWUpKSB7DQogICAgY29sbmFtZXMoZGYpWy0xXSA8LSBwYXN0ZShjb2xuYW1lcyhkZilbLTFdLCAidDIiLCBzZXAgPSAiXyIpDQogIH0NCiAgcmV0dXJuKGRmKQ0KfQ0KDQojIGNyZWF0ZSBhIGxpc3Qgb2YgZGF0YSBmcmFtZXMNCm15X2xpc3QgPC0gbGlzdCh4X3ByZSA9IHhfcHJlLCB4X3Bvc3QgPSB4X3Bvc3QsDQogICAgICAgICAgICAgICAgeV9wcmUgPSB5X3ByZSwgeV9wb3N0ID0geV9wb3N0KQ0KDQojIGZvciBsb29wIHRocm91Z2ggbGlzdA0KZm9yIChpIGluIHNlcV9hbG9uZyhteV9saXN0KSkgew0KICBkZl9uYW1lIDwtIG5hbWVzKG15X2xpc3QpW2ldDQogIGlmIChncmVwbCgicHJlIiwgZGZfbmFtZSkpIHsNCiAgICBjb2xuYW1lcyhteV9saXN0W1tpXV0pWy0xXSA8LSBwYXN0ZShjb2xuYW1lcyhteV9saXN0W1tpXV0pWy0xXSwgInQxIiwgc2VwID0gIl8iKSANCiAgfQ0KICBlbHNlIGlmIChncmVwbCgicG9zdCIsIGRmX25hbWUpKSB7DQogICAgY29sbmFtZXMobXlfbGlzdFtbaV1dKVstMV0gPC0gcGFzdGUoY29sbmFtZXMobXlfbGlzdFtbaV1dKVstMV0sICJ0MiIsIHNlcCA9ICJfIikNCiAgfQ0KfQ0KDQpgYGANCg0KIyMjIyBaYWNoIE1ldGhvZCBCDQoNCkFsdGVybmF0aXZlIGFwcHJvYWNoIChwcm9iYWJseSBiZXR0ZXIpLiBVc2VzIGFub255bW91cyBmdW5jdGlvbiBhbmQgbWFwDQoNCmBgYCB7ciBpbmNsdWRlID0gVFJVRX0NCg0KIyByZS1jcmVhdGUgdGhlIGluaXRpYWwgbGlzdCBvZiBkYXRhIGZyYW1lcw0KbXlfbGlzdCA8LSBsaXN0KHhfcHJlID0geF9wcmUsIHhfcG9zdCA9IHhfcG9zdCwNCiAgICAgICAgICAgICAgICB5X3ByZSA9IHlfcHJlLCB5X3Bvc3QgPSB5X3Bvc3QpDQoNCm15X2xpc3QgPC0gTWFwKA0KICBmdW5jdGlvbihsaXN0X2RmLCBsaXN0X25hbWVzKSB7DQogICAgaWYgKGVuZHNXaXRoKGxpc3RfbmFtZXMsICJwcmUiKSkgew0KICAgICAgbmFtZXMobGlzdF9kZilbLTFdIDwtIHBhc3RlKG5hbWVzKGxpc3RfZGYpWy0xXSwgInQxIiwgc2VwID0gIl8iKQ0KICAgIH0gDQogICAgZWxzZSBpZiAoZW5kc1dpdGgobGlzdF9uYW1lcywgInBvc3QiKSkgew0KICAgICAgbmFtZXMobGlzdF9kZilbLTFdIDwtIHBhc3RlKG5hbWVzKGxpc3RfZGYpWy0xXSwgInQyIiwgc2VwID0gIl8iKQ0KICAgIH0NCiAgICBsaXN0X2RmDQogIH0sIA0KICBteV9saXN0LCANCiAgbmFtZXMobXlfbGlzdCkNCikNCg0KI21lcmdlIGFsbCBkYXRhIGZyYW1lcyB0b2dldGhlcg0KZmluYWxfcHJvZHVjdCA8LSBteV9saXN0ICU+JSANCiAgcmVkdWNlKGZ1bGxfam9pbikNCiAgDQpgYGANCg0KDQojIyMjIE1hdHQgTWV0aG9kIChiZWZvcmUgWmFjaCBtZXRob2QpDQoNCmBgYCB7ciBpbmNsdWRlID0gVFJVRX0NCg0KIyMgbm90IHNob3duIGhlcmUsIGJ1dCB0eXBpY2FsbHkgbmVlZCB0byBjbGVhbiBkYXRhc2V0IGJlZm9yZSBtZXJnaW5nDQoNCm1lcmdlZF9kYXRhIDwtIGRhdGFfcHJlICU+JSBmdWxsX2pvaW4oZGF0YV9wb3N0LCBieSA9IGMoIngiKSwgc3VmZml4ID0gYygiX3ByZSIsICJfcG9zdCIpKQ0KDQojIyBub3Qgc2hvd24gaGVyZSwgYnV0IHR5cGljYWxseSBuZWVkIHRvIHJldmlldyB0aGUgbWVyZ2VkIGNvbHVtbiBhbmQgZG8gYWRkaXRpb25hbCBjbGVhbmluZw0KDQpgYGANCg0KDQojIyMgU3Vic2V0dGluZyBhIGRhdGFzZXQNCg0KYGBgIHtyIGluY2x1ZGUgPSBUUlVFfQ0KDQojIFNlbGVjdGluZyBjZXJ0YWluIHJvd3MNCg0Kc3Vic2V0IDwtIGRhdGFbYygyMjo2MCksXQ0KDQojIFNlbGVjdGluZyBjZXJ0YWluIGNvbHVtbnMNCg0Kc3Vic2V0IDwtIGRhdGFbLGMoODoyNyldDQoNCiMjIFRoaXMgdGVjaG5pcXVlIGNhbiBiZSB1c2VkIHRvIGRlbGV0ZSBhIHNldCBvZiBjb2x1bW5zDQoNCmRhdGFfMSA8LSBkcGx5cjo6c2VsZWN0KGRhdGEsIC1jb2x1bW4xOi1jb2x1bW4xOCkNCg0KIyBGaWx0ZXJpbmcgZm9yIGEgY2VydGFpbiByZXNwb25zZSBvciBncm91cA0KDQpuZXdkYXRhIDwtIGRhdGEgJT4lIGZpbHRlcih2YXIxID09IDEgfCB2YXIyID09IDEpDQpuZXdkYXRhIDwtIGRhdGEgJT4lIGZpbHRlcih2YXIxID09IDEgJiB2YXIyID09IDEpDQpuZXdkYXRhIDwtIGRhdGEgJT4lIGZpbHRlcih2YXIxID09ICJ2YWx1ZSIgJiB2YXIyID09ICJ2YWx1ZSIpDQoNCmBgYA0KDQoNCiMjIyBCaW5kaW5nIGRhdGEgdG9nZXRoZXIgZnJvbSB2YXJpb3VzIGNvaG9ydHMgLyBzdXJ2ZXlzDQoNCk1hdHQncyB2ZXJ5IGxhYm9yaW91cyB3YXkgb2YgYmluZGluZyBkYXRhIHRvZ2V0aGVyDQoNCmBgYCB7ciBpbmNsdWRlID0gVFJVRX0NCg0KIyMgU2VsZWN0IGFsbCBvZiB0aGUgY29sdW1ucyBpbiB0aGUgZGF0YXNldHMgdG8gbWFrZSBzdXJlIHRoZXkgYXJlIGFsbCB0aGUgc2FtZSANCiMjIGFuZCBoYXZlIHRoZSBzYW1lIG5hbWVzIHVzaW5nIGRwbHlyOjpzZWxlY3QoKS4gVGhlbiwgdHVybiB0aGVtIGFsbCBpbnRvIGRhdGEgdGFibGVzLg0KDQpkYXRhMSA8LSBhcy5kYXRhLnRhYmxlKGRhdGExKQ0KDQojIyBOZXh0LCBmaXggYWxsIG9mIHRoZSB2YXJpYWJsZSB0eXBlcyB0byBtYWtlIHN1cmUgdGhlIHZhcmlhYmxlIHR5cGVzIGluIGVhY2ggZGF0YXNldA0KIyMgaXMgYWxpZ25lZC4gRm9yIGV4YW1wbGUuLi4NCg0KZGF0YTEkdjEgPC0gYXMuY2hhcmFjdGVyKGRhdGExJHYxKQ0KZGF0YTEkdjIgPC0gYXMuaW50ZWdlcihkYXRhMSR2MikNCmRhdGEyJHYxIDwtIGFzLmNoYXJhY3RlcihkYXRhMiR2MSkNCmRhdGEyJHYyIDwtIGFzLmludGVnZXIoZGF0YTIkdjIpDQoNCiMjIFRoZW4sIGJpbmQgdGhlIGRhdGFzZXRzDQoNCmRhdGEgPC0gZnVuaW9uKGRhdGExLCBkYXRhMikNCg0KYGBgDQoNCg0KIyMjIENyZWF0aW5nIHNjYWxlIHZhcmlhYmxlcw0KDQpgYGAge3IgaW5jbHVkZSA9IFRSVUV9DQoNCmRhdGEgPC0gZGF0YSAlPiUgDQogIG11dGF0ZShsdjEgPSAoKHYxICsgdjIgKyB2MykgLyAzKSkgJT4lDQogIG11dGF0ZShsdjIgPSAoKHY0ICsgdjUgKyB2NikgLyAzKSkgJT4lDQogIG11dGF0ZShsdjMgPSAoKHY3ICsgdjggKyB2OSArIHYxMCArIHYxMSkgLyA1KSkNCg0KYGBgDQoNCg0KIyMjIEFuYWx5emluZyBkZXNjcmlwdGl2ZSBzdGF0aXN0aWNzIG9mIGFsbCBpdGVtcyB0byBzZWUgaWYgdGhlcmUgYXJlIGFueSBpc3N1ZSB3aXRoIGRpcmVjdGlvbiBvciB2YWx1ZXMgb3Igb3RoZXIgZmFjdG9ycyDihpIgZGF0YSBjaGVja2luZyBndWlkZWxpbmVzDQoNCiMjIyMgUXVpY2sgd2F5IHRvIGxvb2sgYXQgbWVhbnMgYW5kIFNEcw0KDQpgYGAge3IgaW5jbHVkZSA9IFRSVUV9DQoNCnRhYmxlIDwtIGRhdGFbYygidjEiLCAidjIiLCAidjMiLCAidjQiLCAidjUiKV0NCg0KdGFibGUgJT4lIHRibF9zdW1tYXJ5KHN0YXRpc3RpYyA9IGxpc3QoYWxsX2NvbnRpbnVvdXMoKSB+ICJ7bWVhbn0gKHtzZH0pIiksIA0KICAgICAgICAgICAgICAgICAgICAgICB0eXBlID0gbGlzdCh2MSB+ICdjb250aW51b3VzJywNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdjIgfiAnY29udGludW91cycsIA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB2MyB+ICdjb250aW51b3VzJywNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdjQgfiAnY29udGludW91cycsDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHY1IH4gJ2NvbnRpbnVvdXMnKSwNCiAgICAgICAgICAgICAgICAgICAgICAgZGlnaXRzID0gYWxsX2NvbnRpbnVvdXMoKSB+IDIsDQogICAgICAgICAgICAgICAgICAgICAgIG1pc3NpbmdfdGV4dCA9ICIoTWlzc2luZykiKQ0KDQpgYGANCg0KDQojIyMjIE1vcmUgZGV0YWlsZWQgd2F5IHRvIGxvb2sgYXQgZGVzY3JpcHRpdmVzDQoNCmBgYCB7ciBpbmNsdWRlID0gVFJVRX0NCg0KYjE8LSBzdW1tYXJ5U0UoZGF0YSwgbWVhc3VyZXZhcj0ic2NhbGUiLCBuYS5ybT1UUlVFKQ0KYjI8LSBzdW1tYXJ5U0UoZGF0YSwgbWVhc3VyZXZhcj0idjEiLCBuYS5ybT1UUlVFKQ0KYjM8LSBzdW1tYXJ5U0UoZGF0YSwgbWVhc3VyZXZhcj0idjIiLCBuYS5ybT1UUlVFKQ0KYjQ8LSBzdW1tYXJ5U0UoZGF0YSwgbWVhc3VyZXZhcj0idjMiLCBuYS5ybT1UUlVFKQ0KYjU8LSBzdW1tYXJ5U0UoZGF0YSwgbWVhc3VyZXZhcj0idjQiLCBuYS5ybT1UUlVFKQ0KYjY8LSBzdW1tYXJ5U0UoZGF0YSwgbWVhc3VyZXZhcj0idjUiLCBuYS5ybT1UUlVFKQ0KDQojTm93LCB3ZSdyZSBnb2luZyB0byByZW5hbWUgdGhlIG1lYW4gKHRoZSAzcmQgdmFyaWFibGUpIHRvIGFjdHVhbGx5IGJlIGNhbGxlZCBtZWFuDQpuYW1lcyhiMSlbM10gPC0gIm1lYW4iDQpuYW1lcyhiMilbM10gPC0gIm1lYW4iDQpuYW1lcyhiMylbM10gPC0gIm1lYW4iDQpuYW1lcyhiNClbM10gPC0gIm1lYW4iDQpuYW1lcyhiNSlbM10gPC0gIm1lYW4iDQpuYW1lcyhiNilbM10gPC0gIm1lYW4iDQoNCiMgTm93IHdlIGFyZSBhZGRpbmcgYSB2YXJpYWJsZSB0aGF0IGlzIHRoZSBpdGVtIHRleHQgZm9yIHdoYXQgd2UncmUgbG9va2luZyBhdA0KYjEkdmFyaWFibGUgPC0gIlNjYWxlIg0KYjIkdmFyaWFibGUgPC0gIkl0ZW0gMSINCmIzJHZhcmlhYmxlIDwtICJJdGVtIDIiDQpiNCR2YXJpYWJsZSA8LSAiSXRlbSAzIg0KYjUkdmFyaWFibGUgPC0gIkl0ZW0gNCINCmI2JHZhcmlhYmxlIDwtICJJdGVtIDUiDQoNCg0KIyBOb3cgd2UgYXJlIGFkZGluZyBhIHZhcmlhYmxlIHRoYXQgaXMgdGhlIG5hbWUgb2Ygd2hhdCB3ZSdyZSBsb29raW5nIGF0DQpiMSRUeXBlIDwtICJTY2FsZSINCmIyJFR5cGUgPC0gIkl0ZW0gMSINCmIzJFR5cGUgPC0gIkl0ZW0gMiINCmI0JFR5cGUgPC0gIkl0ZW0gMyINCmI1JFR5cGUgPC0gIkl0ZW0gNCINCmI2JFR5cGUgPC0gIkl0ZW0gNSINCg0KDQojIEJpbmQgdGhlbSBhbGwgdG9nZXRoZXIhDQoNCmIgPC0gcmJpbmQoYjEsYjIsYjMsYjQsYjUsYjYpDQoNCiMgQ3JlYXRlIHRhYmxlDQoNCnBhbmRlcihiW2MoNywyOjYpXSwgY2FwdGlvbj0iVGFibGUgZm9yIFNjYWxlIGFuZCBJdGVtcyIsanVzdGlmeT0ibGVmdCIscm91bmQ9MikNCg0KYGBgDQoNCg0KIyMjIEhhbmRsaW5nIG1pc3NpbmcgZGF0YQ0KDQpgYGAge3IgaW5jbHVkZSA9IFRSVUV9DQoNCg0KYGBgDQoNCg0KIyMjIEhhbmRsaW5nIGR1cGxpY2F0ZXMNCg0KSW4gdGhpcyBsaW5lLCB3ZSBuZWVkIHRvIGlkZW50aWZ5IHdoaWNoIHZhcmlhYmxlIHNob3VsZCBub3QgaGF2ZSBkdXBsaWNhdGVzIHRvIHRoZW4gc2VsZWN0IGl0IHdoZW4gd2UgcmVtb3ZlIGR1cGxpY2F0ZXMNCg0KYGBgIHtyIGluY2x1ZGUgPSBUUlVFfQ0KDQpkYXRhIDwtIGRhdGFbIWR1cGxpY2F0ZWQoZGF0YSR2MSksXQ0KDQpgYGANCg0KDQojIyMgSWRlbnRpZnlpbmcgYW5kIHJlbW92aW5nIG91dGxpZXJzDQoNCmBgYCB7ciBpbmNsdWRlID0gVFJVRX0NCg0KDQoNCmBgYA0KDQoNCiMjIyBSZXZlcnNlIHNjb3JpbmcgaXRlbXMNCg0KYGBgIHtyIGluY2x1ZGUgPSBUUlVFfQ0KDQpkYXRhJHYxUiA8LSA3IC0gZGF0YSR2MQ0KZGF0YSR2MlIgPC0gNyAtIGRhdGEkdjINCg0KYGBgDQoNCg==</div>
 
 
 
