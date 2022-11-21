@@ -1,0 +1,44 @@
+# Final Product
+
+## Intro
+
+This final product RMarkdown will serve as a skeleton for the final product and a demonstration of the ways we fix common issues.
+
+I suggest we keep everything in this document and be diligent in our use of section headers to delineate where we have certain code chunks. For example, the first section after downloading packages can be data cleaning (two #), followed by subheaders of handling missing values, key checks of data (e.g. checking the range, responses on each variable, and variable type), and norming data, if necessary (three #).
+
+## Download packages
+
+``` {r include = FALSE}
+
+library(tidyverse) # for data management
+library(psych) # to analyze data and descriptive statistics
+library(ggplot2) # to make some nice graphs
+library(pander) # to make some clean tables
+
+```
+
+## Data Cleaning
+
+### Handling Missing Values
+
+
+
+### Key Checks
+
+#### Ranges
+
+
+
+#### Responses
+
+
+
+#### Variable type
+
+
+
+### Norming data
+
+
+
+
