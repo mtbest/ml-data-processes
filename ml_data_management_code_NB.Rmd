@@ -1284,8 +1284,12 @@ nd_data <- d[!duplicated(d$PartID),]
 
 ``` {r include = TRUE}
 
-data$v1R <- 7 - data$v1
-data$v2R <- 7 - data$v2
+d <- d %>%
+    mutate_at(c("St1_toi1", "St1_toi2"),
+              ~ recode(., "1" = 6, "2" = 5, "3" = 4, 
+                          "4" = 3, "5" = 2, "6" = 1))
+
+# the only issue here is that it is not recoding the variable to make a new version. Do you all know how to use a function in this case and have the result be new variables with unique names?
 
 ```
 
