@@ -1126,10 +1126,10 @@ fulldata <- funion(data1, data2) # a note: To use the funion function, there is 
 
 ``` {r include = TRUE}
 
-data <- data %>% 
-  mutate(lv1 = ((v1 + v2 + v3) / 3)) %>%
-  mutate(lv2 = ((v4 + v5 + v6) / 3)) %>%
-  mutate(lv3 = ((v7 + v8 + v9 + v10 + v11) / 5))
+d <- d %>% 
+  mutate(St1_S_gen = ((St1_bel1 + St1_bel2) / 2), 
+         St1_P_gen = ((St1_v1 + St1_v2) / 2), 
+         St1_INTER_m = ((St1_mot_a_5 + St1_mot_a_6 + St1_mot_a_7 + St1_mot_a_8) / 4))
 
 ```
 
