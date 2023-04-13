@@ -1150,14 +1150,14 @@ d <- d %>%
 
 #### Create composite variables with a custom rowMeans function
 
-This function was used for the Clifford Harm Scale (very long scale with lots of items to create the composite)
+This function was used for the Clifford Harm Scale (very long scale with lots of items to create the composite). Here is how it could be used with the LA BOR simulated dataset.
 
 ``` {r include = TRUE}
 
   mutate(
-    clif_harm_wrong_mean = rowMeans(
+    St1_P_gen = rowMeans(
       select(., 
-             starts_with("clif_harm") & ends_with("1")
+             starts_with("St1_v")
              ), 
              na.rm = TRUE
       )
