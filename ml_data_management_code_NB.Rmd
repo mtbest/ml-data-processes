@@ -1242,6 +1242,15 @@ b0[[1]]
 
 ```
 
+#### Look at descriptives using the map() and describe() functions
+
+``` {r include = TRUE}
+
+d %>% 
+  select(St1_mot_a_5, St1_mot_a_6, St1_mot_a_7, St1_mot_a_8, St1_INTER_m) %>%
+  map(psych::describe)
+
+```
 
 ### Handling missing data
 
