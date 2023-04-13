@@ -1137,10 +1137,14 @@ d <- d %>%
 
 ``` {r include = TRUE}
 
-data <- data %>% 
-  mutate(lv1 = rowMeans(c(v1,v2,v3), na.rm = TRUE)) %>%
-  mutate(lv2 = rowMeans(c(v4,v5,v6), na.rm = TRUE)) %>%
-  mutate(lv3 = rowMeans(c(v7,v8,v9,v10,v11), na.rm = TRUE))
+d <- d %>% 
+  mutate(St1_S_gen = rowMeans(c("St1_bel1","St1_bel2"), na.rm = TRUE)) %>%
+  mutate(St1_P_gen = rowMeans(c("St1_v1","St1_v2"), na.rm = TRUE)) %>%
+  mutate(St1_INTER_m = rowMeans(c("St1_mot_a_5", "St1_mot_a_6", "St1_mot_a_7", "St1_mot_a_8"), na.rm = TRUE))
+
+# Note: using na.rm=TRUE includes all responses, even when the respondent did not answer all of the items. So, if you want to only include complete respondents, use na.rm=FALSE.
+
+# Zach also mentioned using across(), so feel free to add in that style here!
 
 ```
 
