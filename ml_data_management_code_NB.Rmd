@@ -1087,6 +1087,8 @@ newdata4 <- d %>%
   filter(St1_pfv1_num == 1 & St1_pfv2_num == 1)
 newdata5 <- d %>% 
   filter(D_female == "female" & D_race_ML == "Black or African American")
+newdata6 <- d %>%
+  filter(D_female == "male" & D_race_ML == "Black or African American")
 
 ```
 
@@ -1100,8 +1102,8 @@ Matt's very laborious way of binding data together. One note is that the binding
 ## Select all of the columns in the datasets to make sure they are all the same 
 ## and have the same names using dplyr::select(). Then, turn them all into data tables.
 
-data1 <- as.data.table(data_a)
-data2 <- as.data.table(data_b)
+data1 <- as.data.table(newdata5)
+data2 <- as.data.table(newdata6)
 
 ## Next, fix all of the variable types to make sure the variable types in each dataset
 ## are aligned. For example...
