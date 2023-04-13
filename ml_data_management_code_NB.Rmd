@@ -4,7 +4,7 @@ output: html_notebook
 ---
 # ML Data Management Code
 
-## Intro
+## Intro 
 
 This is the R Notebook for our ML Data Management Code. We originally worked on this in an RScript, but will now use an R Notebook for it. The data used in this file will come from a simulated dataset.
 
