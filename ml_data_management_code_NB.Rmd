@@ -13,7 +13,6 @@ This is the R Notebook for our ML Data Management Code. We originally worked on 
 ``` {r include = FALSE}
 library(tidyverse) # for data management
 library(psych) # to analyze data and descriptive statistics
-library(ggplot2) # to make some nice graphs
 library(pander) # to make some clean tables
 library(Rmisc) # to use summarySE() function
 library(gtsummary) # to make some cool summary tables that fit APA format
