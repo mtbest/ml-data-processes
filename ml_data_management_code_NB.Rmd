@@ -1115,7 +1115,7 @@ data2 <- as.data.table(newdata6)
 
 ## Then, bind the datasets
 
-fulldata <- funion(data1, data2)
+fulldata <- funion(data1, data2) # a note: To use the funion function, there is a requirement that all data types align, so that step is necessary to use the function, along with the datasets being data.tables. This is why I would like a better way of doing this! Zach mentioned rbind() and merge(), so please overwrite this with better options. Thanks!
 
 ```
 
