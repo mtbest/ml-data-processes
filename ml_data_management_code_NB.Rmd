@@ -1994,14 +1994,22 @@ fulldata <- funion(data1, data2) # a note: To use the funion function, there is 
 
 ### Creating scale variables 
 
+#### Make mindset variables numeric
+
+``` {r include = TRUE}
+
+
+
+```
+
 #### Using mutate and addition
 
 ``` {r include = TRUE}
 
-d <- d %>% 
-  mutate(St1_S_gen = ((St1_bel1 + St1_bel2) / 2), 
-         St1_P_gen = ((St1_v1 + St1_v2) / 2), 
-         St1_INTER_m = ((St1_mot_a_5 + St1_mot_a_6 + St1_mot_a_7 + St1_mot_a_8) / 4))
+d_pre <- d_pre %>% 
+  mutate(St1_S_gen_pre = ((St1_bel1_pre + St1_bel2_pre) / 2), 
+         St1_P_gen_pre = ((St1_v1_pre + St1_v2_pre) / 2), 
+         St1_INTER_m_pre = ((St1_mot_a_5_pre + St1_mot_a_6_pre + St1_mot_a_7_pre + St1_mot_a_8_pre) / 4))
 
 ```
 
@@ -2009,10 +2017,10 @@ d <- d %>%
 
 ``` {r include = TRUE}
 
-d <- d %>% 
-  mutate(St1_S_gen = rowMeans(c("St1_bel1","St1_bel2"), na.rm = TRUE)) %>%
-  mutate(St1_P_gen = rowMeans(c("St1_v1","St1_v2"), na.rm = TRUE)) %>%
-  mutate(St1_INTER_m = rowMeans(c("St1_mot_a_5", "St1_mot_a_6", "St1_mot_a_7", "St1_mot_a_8"), na.rm = TRUE))
+d_pre <- d_pre %>% 
+  mutate(St1_S_gen_pre = rowMeans(c("St1_bel1_pre","St1_bel2_pre"), na.rm = TRUE)) %>%
+  mutate(St1_P_gen_pre = rowMeans(c("St1_v1_pre","St1_v2_pre"), na.rm = TRUE)) %>%
+  mutate(St1_INTER_m_pre = rowMeans(c("St1_mot_a_5_pre", "St1_mot_a_6_pre", "St1_mot_a_7_pre", "St1_mot_a_8_pre"), na.rm = TRUE))
 
 # Note: using na.rm=TRUE includes all responses, even when the respondent did not answer all of the items. So, if you want to only include complete respondents, use na.rm=FALSE.
 
@@ -2027,7 +2035,7 @@ This function was used for the Clifford Harm Scale (very long scale with lots of
 ``` {r include = TRUE}
 
   mutate(
-    St1_P_gen = rowMeans(
+    St1_P_gen_pre = rowMeans(
       select(., 
              starts_with("St1_v")
              ), 
@@ -2043,12 +2051,12 @@ This function was used for the Clifford Harm Scale (very long scale with lots of
 
 ``` {r include = TRUE}
 
-table <- d[c("St1_S_gen", "St1_P_gen", "St1_INTER_m")]
+table <- d[c("St1_S_gen_pre", "St1_P_gen_pre", "St1_INTER_m_pre")]
 
 table %>% tbl_summary(statistic = list(all_continuous() ~ "{mean} ({sd})"), 
-                       type = list(St1_S_gen ~ 'continuous',
-                                   St1_P_gen ~ 'continuous', 
-                                   St1_INTER_m ~ 'continuous'),
+                       type = list(St1_S_gen_pre ~ 'continuous',
+                                   St1_P_gen_pre ~ 'continuous', 
+                                   St1_INTER_m_pre ~ 'continuous'),
                        digits = all_continuous() ~ 2,
                        missing_text = "(Missing)")
 
@@ -2059,11 +2067,11 @@ table %>% tbl_summary(statistic = list(all_continuous() ~ "{mean} ({sd})"),
 
 ``` {r include = TRUE}
 
-b1<- summarySE(d, measurevar="St1_INTER_m", na.rm=TRUE)
-b2<- summarySE(d, measurevar="St1_mot_a_5", na.rm=TRUE)
-b3<- summarySE(d, measurevar="St1_mot_a_6", na.rm=TRUE)
-b4<- summarySE(d, measurevar="St1_mot_a_7", na.rm=TRUE)
-b5<- summarySE(d, measurevar="St1_mot_a_8", na.rm=TRUE)
+b1<- summarySE(d, measurevar="St1_INTER_m_pre", na.rm=TRUE)
+b2<- summarySE(d, measurevar="St1_mot_a_5_pre", na.rm=TRUE)
+b3<- summarySE(d, measurevar="St1_mot_a_6_pre", na.rm=TRUE)
+b4<- summarySE(d, measurevar="St1_mot_a_7_pre", na.rm=TRUE)
+b5<- summarySE(d, measurevar="St1_mot_a_8_pre", na.rm=TRUE)
 
 #Now, we're going to rename the mean (the 3rd variable) to actually be called mean
 names(b1)[3] <- "mean"
@@ -2105,7 +2113,7 @@ pander(b[c(7,2:6)], caption="Table for Scale and Items",justify="left",round=2)
 # using map
 
 b0 <- map(
-  .x = c("St1_mot_a_5", "St1_mot_a_6", "St1_mot_a_7", "St1_mot_a_8"),
+  .x = c("St1_mot_a_5_pre", "St1_mot_a_6_pre", "St1_mot_a_7_pre", "St1_mot_a_8_pre"),
   .f = ~ summarySE(d, measurevar = .x, na.rm = TRUE)
   )
 
@@ -2118,7 +2126,7 @@ b0[[1]]
 ``` {r include = TRUE}
 
 d %>% 
-  select(St1_mot_a_5, St1_mot_a_6, St1_mot_a_7, St1_mot_a_8, St1_INTER_m) %>%
+  select(St1_mot_a_5_pre, St1_mot_a_6_pre, St1_mot_a_7_pre, St1_mot_a_8_pre, St1_INTER_m_pre) %>%
   map(psych::describe)
 
 ```
@@ -2137,7 +2145,7 @@ In this line, we need to identify which variable should not have duplicates to t
 
 ``` {r include = TRUE}
 
-nd_data <- d[!duplicated(d$PartID),]
+nd_data <- d[!duplicated(merged_data$PartID_pre),]
 
 ```
 
@@ -2155,8 +2163,8 @@ nd_data <- d[!duplicated(d$PartID),]
 
 ``` {r include = TRUE}
 
-d <- d %>%
-    mutate_at(c("St1_toi1", "St1_toi2"),
+merged_data <- merged_data %>%
+    mutate_at(c("St1_toi1_pre", "St1_toi2_pre"),
               ~ recode(., "1" = 6, "2" = 5, "3" = 4, 
                           "4" = 3, "5" = 2, "6" = 1))
 
