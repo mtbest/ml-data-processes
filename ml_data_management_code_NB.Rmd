@@ -278,7 +278,7 @@ St1_per_class <- sample(x = c("Prefer not to answer",
                               "Upper class"),
                         size = n,
                         replace = TRUE, 
-                        prob = c(.1, .2, .2, .2, .1))
+                        prob = c(.1, .15, .25, .25, .15, .1))
 
 
 St1_per_ses <- sample(x = c("1 - The people at the very bottom", "2", "3", "4", "5",
@@ -907,66 +907,66 @@ d <- as.data.frame(
                     1, 
                     prob=c((1 - .1), .1))))
 
-# Make numeric
+# Make numeric - although this code isn't working for some reason
 
-mutate(across(
-  .cols = d[c("St1_bel_bu2", "St1_bel1", "St1_bel2",
-              "St1_v1",  "St1_v2", "St1_ap1", "St1_toi1", "St1_toi2",
-              "St1_sp_bel_bu1", "St1_sp_bel1", "St1_sp_v1",
-              "St1_sp_v2", "St1_sp_v3", "St1_sp_ap1", "St1_sp_toi1", "St1_sp_toi2",
-              "St1_pfbel1", "St1_pfbel2", "St1_pfv1", "St1_pfv2", "St1_pfap1",
-              "St1_pftoi1", "St1_pftoi2", "St1_sp_pfbel1", "St1_sp_pfbel2",
-              "St1_sp_pfv1", "St1_sp_pfv2", "St1_sp_pfv3", "St1_sp_pfap1", 
-              "St1_sp_pfap2", "St1_sp_pftoi1", "St1_sp_pftoi2")],
-  .fns = list(
-    ~recode(
-      .x,
-      "1 - Strongly disagree" ~ 1,
-      "2 - Disagree" ~ 2,
-      "3 - Slightly disagree" ~ 3,
-      "4 - Slightly agree" ~ 4,
-      "5 - Agree" ~ 5,
-      "6 - Strongly agree" ~ 6,
-    )
-  ),
-  .names = "{.col}_num"
-))
+#dplyr::mutate(dplyr::across(
+#  .cols = d[c("St1_bel_bu2", "St1_bel1", "St1_bel2",
+#              "St1_v1",  "St1_v2", "St1_ap1", "St1_toi1", "St1_toi2",
+#              "St1_sp_bel_bu1", "St1_sp_bel1", "St1_sp_v1",
+#              "St1_sp_v2", "St1_sp_v3", "St1_sp_ap1", "St1_sp_toi1", "St1_sp_toi2",
+#              "St1_pfbel1", "St1_pfbel2", "St1_pfv1", "St1_pfv2", "St1_pfap1",
+#              "St1_pftoi1", "St1_pftoi2", "St1_sp_pfbel1", "St1_sp_pfbel2",
+#              "St1_sp_pfv1", "St1_sp_pfv2", "St1_sp_pfv3", "St1_sp_pfap1", 
+#              "St1_sp_pfap2", "St1_sp_pftoi1", "St1_sp_pftoi2")],
+#  .fns = list(
+#    ~dplyr::recode(
+#      .x,
+#      "Strongly disagree" ~ 1,
+#      "Disagree" ~ 2,
+#      "Slightly disagree" ~ 3,
+#      "Slightly agree" ~ 4,
+#      "Agree" ~ 5,
+#      "Strongly agree" ~ 6,
+#    )
+#  ),
+#  .names = "{.col}_num"
+#))
 
-mutate(across(
-  .cols = d[c("St1_mot_a_2", "St1_mot_a_3", "St1_mot_a_4",
-         "St1_mot_a_5", "St1_mot_a_6", "St1_mot_a_7", "St1_mot_a_8",
-         "St1_mot_a_9", "St1_mot_a_10", "St1_mot_a_11", "St1_mot_b_1",
-         "St1_mot_b_2", "St1_mot_b_3", "St1_mot_b_4", "St1_mot_b_5",
-         "St1_mot_b_6", "St1_mot_b_7", "St1_mot_b_8")],
-  .fns = list(
-    ~recode(
-      .x,
-      "1 - Not at all important" ~ 1,
-      "2 - Slightly important" ~ 2,
-      "3 - Somewhat important" ~ 3,
-      "4 - Moderately important" ~ 4,
-      "5 - Very important" ~ 5,
-      "6 - Extremely important" ~ 6,
-    )
-  ),
-  .names = "{.col}_num"
-))
+#dplyr::mutate(dplyr::across(
+#  .cols = d[c("St1_mot_a_2", "St1_mot_a_3", "St1_mot_a_4",
+#         "St1_mot_a_5", "St1_mot_a_6", "St1_mot_a_7", "St1_mot_a_8",
+#         "St1_mot_a_9", "St1_mot_a_10", "St1_mot_a_11", "St1_mot_b_1",
+#         "St1_mot_b_2", "St1_mot_b_3", "St1_mot_b_4", "St1_mot_b_5",
+#         "St1_mot_b_6", "St1_mot_b_7", "St1_mot_b_8")],
+#  .fns = list(
+#    ~dplyr::recode(
+#      .x,
+#      "Not at all important" ~ 1,
+#      "Slightly important" ~ 2,
+#      "Somewhat important" ~ 3,
+#      "Moderately important" ~ 4,
+#      "Very important" ~ 5,
+#      "Extremely important" ~ 6,
+#    )
+#  ),
+#  .names = "{.col}_num"
+#))
 
-mutate(across(
-  .cols = d[c("St1_bel_bu5", "St1_sp_bel_bu2",)],
-  .fns = list(
-    ~recode(
-      .x,
-      "Never" ~ 1,
-      "Hardly ever" ~ 2,
-      "Sometimes" ~ 3,
-      "Frequently" ~ 4,
-      "Very often" ~ 5,
-      "Always" ~ 6,
-    )
-  ),
-  .names = "{.col}_num"
-))
+#dplyr::mutate(dplyr::across(
+#  .cols = d[c("St1_bel_bu5", "St1_sp_bel_bu2",)],
+#  .fns = list(
+#    ~dplyr::recode(
+#      .x,
+#      "Never" ~ 1,
+#      "Hardly ever" ~ 2,
+#      "Sometimes" ~ 3,
+#      "Frequently" ~ 4,
+#      "Very often" ~ 5,
+#      "Always" ~ 6,
+#    )
+#  ),
+#  .names = "{.col}_num"
+#))
 
 
                     
