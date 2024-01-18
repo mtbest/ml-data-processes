@@ -2006,7 +2006,7 @@ fulldata <- funion(data1, data2) # a note: To use the funion function, there is 
 
 ``` {r include = TRUE}
 
-d_pre <- d_pre %>% 
+merged_data <- merged_data %>% 
   mutate(St1_S_gen_pre = ((St1_bel1_pre + St1_bel2_pre) / 2), 
          St1_P_gen_pre = ((St1_v1_pre + St1_v2_pre) / 2), 
          St1_INTER_m_pre = ((St1_mot_a_5_pre + St1_mot_a_6_pre + St1_mot_a_7_pre + St1_mot_a_8_pre) / 4))
@@ -2017,7 +2017,7 @@ d_pre <- d_pre %>%
 
 ``` {r include = TRUE}
 
-d_pre <- d_pre %>% 
+merged_data <- merged_data %>% 
   mutate(St1_S_gen_pre = rowMeans(c("St1_bel1_pre","St1_bel2_pre"), na.rm = TRUE)) %>%
   mutate(St1_P_gen_pre = rowMeans(c("St1_v1_pre","St1_v2_pre"), na.rm = TRUE)) %>%
   mutate(St1_INTER_m_pre = rowMeans(c("St1_mot_a_5_pre", "St1_mot_a_6_pre", "St1_mot_a_7_pre", "St1_mot_a_8_pre"), na.rm = TRUE))
@@ -2051,7 +2051,7 @@ This function was used for the Clifford Harm Scale (very long scale with lots of
 
 ``` {r include = TRUE}
 
-table <- d[c("St1_S_gen_pre", "St1_P_gen_pre", "St1_INTER_m_pre")]
+table <- merged_data[c("St1_S_gen_pre", "St1_P_gen_pre", "St1_INTER_m_pre")]
 
 table %>% tbl_summary(statistic = list(all_continuous() ~ "{mean} ({sd})"), 
                        type = list(St1_S_gen_pre ~ 'continuous',
@@ -2067,11 +2067,11 @@ table %>% tbl_summary(statistic = list(all_continuous() ~ "{mean} ({sd})"),
 
 ``` {r include = TRUE}
 
-b1<- summarySE(d, measurevar="St1_INTER_m_pre", na.rm=TRUE)
-b2<- summarySE(d, measurevar="St1_mot_a_5_pre", na.rm=TRUE)
-b3<- summarySE(d, measurevar="St1_mot_a_6_pre", na.rm=TRUE)
-b4<- summarySE(d, measurevar="St1_mot_a_7_pre", na.rm=TRUE)
-b5<- summarySE(d, measurevar="St1_mot_a_8_pre", na.rm=TRUE)
+b1<- summarySE(merged_data, measurevar="St1_INTER_m_pre", na.rm=TRUE)
+b2<- summarySE(merged_data, measurevar="St1_mot_a_5_pre", na.rm=TRUE)
+b3<- summarySE(merged_data, measurevar="St1_mot_a_6_pre", na.rm=TRUE)
+b4<- summarySE(merged_data, measurevar="St1_mot_a_7_pre", na.rm=TRUE)
+b5<- summarySE(merged_data, measurevar="St1_mot_a_8_pre", na.rm=TRUE)
 
 #Now, we're going to rename the mean (the 3rd variable) to actually be called mean
 names(b1)[3] <- "mean"
@@ -2114,7 +2114,7 @@ pander(b[c(7,2:6)], caption="Table for Scale and Items",justify="left",round=2)
 
 b0 <- map(
   .x = c("St1_mot_a_5_pre", "St1_mot_a_6_pre", "St1_mot_a_7_pre", "St1_mot_a_8_pre"),
-  .f = ~ summarySE(d, measurevar = .x, na.rm = TRUE)
+  .f = ~ summarySE(merged_data, measurevar = .x, na.rm = TRUE)
   )
 
 b0[[1]]
@@ -2125,7 +2125,7 @@ b0[[1]]
 
 ``` {r include = TRUE}
 
-d %>% 
+merged_data %>% 
   select(St1_mot_a_5_pre, St1_mot_a_6_pre, St1_mot_a_7_pre, St1_mot_a_8_pre, St1_INTER_m_pre) %>%
   map(psych::describe)
 
@@ -2145,7 +2145,7 @@ In this line, we need to identify which variable should not have duplicates to t
 
 ``` {r include = TRUE}
 
-nd_data <- d[!duplicated(merged_data$PartID_pre),]
+nd_data <- merged_data[!duplicated(merged_data$PartID_pre),]
 
 ```
 
