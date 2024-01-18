@@ -1929,7 +1929,7 @@ final_product <- my_list %>%
 
 ## not shown here, but typically need to clean dataset before merging
 
-merged_data <- data_pre %>% full_join(data_post, by = c("x"), suffix = c("_pre", "_post"))
+merged_data <- d_pre %>% full_join(d_post, by = c("PartID"), suffix = c("_pre", "_post"))
 
 ## not shown here, but typically need to review the merged column and do additional cleaning
 
@@ -1942,27 +1942,25 @@ merged_data <- data_pre %>% full_join(data_post, by = c("x"), suffix = c("_pre",
 
 # Selecting certain rows by index
 
-newdata1 <- d[c(22:60),]
+merged_data <- d[c(22:60),]
 
 # Selecting certain columns by index
 
-newdata2 <- d[,c(8:27)]
+merged_data <- d[,c(8:27)]
 
 ## This technique can be used to delete a set of columns
 
-data_1 <- d %>% 
+data_1 <- merged_data %>% 
   dplyr::select(-Nt1_work:-Nt1_homeless)
 
 # Filtering for a certain response or group
 
-newdata3 <- d %>% 
-  filter(St1_pfv1_num == 1 | St1_pfv2_num == 1)
-newdata4 <- d %>% 
-  filter(St1_pfv1_num == 1 & St1_pfv2_num == 1)
-newdata5 <- d %>% 
-  filter(D_female == "female" & D_race_ML == "Black or African American")
-newdata6 <- d %>%
-  filter(D_female == "male" & D_race_ML == "Black or African American")
+newdata3 <- merged_data %>% 
+  filter(D_age_pre > 25)
+newdata4 <- merged_data %>% 
+  filter(D_female_pre == "female" & D_race_ML_pre == "Black or African American")
+newdata5 <- merged_data %>%
+  filter(D_female_pre == "male" & D_race_ML_pre == "Black or African American")
 
 ```
 
