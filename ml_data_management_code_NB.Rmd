@@ -16,7 +16,6 @@ library(psych) # to analyze data and descriptive statistics
 library(pander) # to make some clean tables
 library(Rmisc) # to use summarySE() function
 library(gtsummary) # to make some cool summary tables that fit APA format
-library(Rmisc) # to use summarySE() function
 
 ```
 
