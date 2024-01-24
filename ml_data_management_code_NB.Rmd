@@ -2053,11 +2053,7 @@ fulldata <- funion(data1, data2) # a note: To use the funion function, there is 
 
 #### Make mindset variables numeric
 
-``` {r include = TRUE}
-
-
-
-```
+This is done in the simulate dataset code, so see there for code for this procedure.
 
 #### Using mutate and addition
 
@@ -2072,16 +2068,17 @@ merged_data <- merged_data %>%
 
 #### Using mutate and rowMeans
 
+Note: using na.rm=TRUE includes all responses, even when the respondent did not answer all of the items. So, if you want to only include complete respondents, use na.rm=FALSE.
+
+
+Zach also mentioned using across(), so feel free to add in that style here!
+
 ``` {r include = TRUE}
 
 merged_data <- merged_data %>% 
   mutate(St1_S_gen_pre = rowMeans(c("St1_bel1_pre","St1_bel2_pre"), na.rm = TRUE)) %>%
   mutate(St1_P_gen_pre = rowMeans(c("St1_v1_pre","St1_v2_pre"), na.rm = TRUE)) %>%
   mutate(St1_INTER_m_pre = rowMeans(c("St1_mot_a_5_pre", "St1_mot_a_6_pre", "St1_mot_a_7_pre", "St1_mot_a_8_pre"), na.rm = TRUE))
-
-# Note: using na.rm=TRUE includes all responses, even when the respondent did not answer all of the items. So, if you want to only include complete respondents, use na.rm=FALSE.
-
-# Zach also mentioned using across(), so feel free to add in that style here!
 
 ```
 
@@ -2091,13 +2088,8 @@ This function was used for the Clifford Harm Scale (very long scale with lots of
 
 ``` {r include = TRUE}
 
-  mutate(
-    St1_P_gen_pre = rowMeans(
-      select(., 
-             starts_with("St1_v")
-             ), 
-             na.rm = TRUE
-      )
+merged_data %>%
+  mutate(St1_P_gen_pre = rowMeans(select(., starts_with("St1_v")), na.rm = TRUE)
 
 ```
 
@@ -2218,14 +2210,14 @@ nd_data <- merged_data[!duplicated(merged_data$PartID_pre),]
 
 ### Reverse scoring items
 
+the only issue here is that it is not recoding the variable to make a new version. Do you all know how to use a function in this case and have the result be new variables with unique names?
+
 ``` {r include = TRUE}
 
 merged_data <- merged_data %>%
     mutate_at(c("St1_toi1_pre", "St1_toi2_pre"),
               ~ recode(., "1" = 6, "2" = 5, "3" = 4, 
                           "4" = 3, "5" = 2, "6" = 1))
-
-# the only issue here is that it is not recoding the variable to make a new version. Do you all know how to use a function in this case and have the result be new variables with unique names?
 
 ```
 
