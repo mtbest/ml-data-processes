@@ -1,0 +1,2222 @@
+---
+title: "ML Data Management Code"
+output: html_notebook
+---
+# ML Data Management Code
+
+## Intro 
+
+This is the R Notebook for our ML Data Management Code. We originally worked on this in an RScript, but will now use an R Notebook for it. The data used in this file will come from a simulated dataset.
+
+## Load packages
+
+``` {r include = FALSE}
+library(tidyverse) # for data management
+library(psych) # to analyze data and descriptive statistics
+library(pander) # to make some clean tables
+library(Rmisc) # to use summarySE() function
+library(gtsummary) # to make some cool summary tables that fit APA format
+
+```
+
+## Load in RScript where functions are created
+
+``` {r include = TRUE}
+
+#source(__.R)
+
+```
+
+## Download Simulated Data
+
+``` {r include = TRUE}
+
+#source(simulate-data.R)
+
+```
+
+## Create a simulated pre dataset
+
+``` {r include = TRUE}
+
+# set seed
+set.seed(123)
+
+# set sample size
+n = 3500
+
+# simulate variables
+Dt1_PartID <- 1:n
+
+Dt1_female <- sample(x = c("Male", "Female", "Non-binary", "Other", "Prefer not to say"), 
+                 size = n,
+                 replace = TRUE, 
+                 prob = c(.45, .45, .02, .02, .01))
+
+
+#gpa <- round(rnorm(n = n, mean = 2.8, sd = .3), 2) #no gpa yet
+
+Dt1_race_ML <- sample(x = c("Black or African American", 
+                               "Asian (Asian Indian, Cambodian, Chinese, Japanese, Korean, Malaysian, Pakistani, Filipino, Thai, or Vietnamese)", 
+                               "White",
+                                "Hispanic / Latinx",
+                                "American Indian or Alaska Native",
+                                "Native Hawaiian or Other Pacific Islander (Hawaiian, Guamanian, Chamorro, Samoan, or other Pacific Islander)",
+                                "Other (please specify)"), 
+                         size = n,
+                         replace = TRUE, 
+                         prob = c(.18, .1, .4, .18, .05, .05, .04))
+
+Dt1_school_RAW <- sample(x = c("Grambling State University", 
+                             "Louisiana Tech University",
+                             "McNeese State University",
+                             "Nicholls State University",
+                             "Northwestern State University",
+                             "Southeastern Louisiana University",
+                             "University of Louisiana at Lafayette",
+                             "University of Louisiana at Monroe",
+                             "University of New Orleans",
+                             "LSU A&M",
+                             "LSU Alexandria",
+                             "LSU Eunice",
+                             "LSU Shreveport",
+                             "LSU Pennington Biomedical Research Center",
+                             "LSU Health Sciences Center New Orleans",
+                             "LSU Health Sciences Center Shreveport",
+                             "Southern University, Baton Rouge",
+                             "Southern University, New Orleans",
+                             "Southern University, Shreveport",
+                             "Southern University Law Center",
+                             "Baton Rouge Community College",
+                             "Bossier Parish Community College",
+                             "Central Louisiana Technical Community College",
+                             "Delgado Community College",
+                             "Louisiana Delta Community College",
+                             "Fletcher Technical Community College",
+                             "Northshore Technical Community College",
+                             "Northwest Louisiana Technical Community College",
+                             "Nunez Community College",
+                             "River Parishes Community College",
+                             "South Louisiana Community College",
+                             "SOWELA Technical Community College",
+                             "Other"),
+                       size = n,
+                       replace = TRUE, 
+                       prob = c(.03, .03, .03, .03, .03, .03, .03, .03,
+                                .03, .04, .03, .03, .03, .03, .03, .03,
+                                .03, .03, .03, .03, .03, .03, .03, .03,
+                                .03, .03, .03, .03, .03, .03, .03, .03, .03))
+
+Dt1_year <- sample(x = c("First-year student", 
+                       "Second-year student",
+                       "Third-year student",
+                       "Fourth-year student",
+                       "Fifth-or-more year student",
+                       "Graduate student",
+                       "Other"),
+                 size = n,
+                 replace = TRUE, 
+                 prob = c(.2, .2, .2, .2, .08, .08, .04))
+
+#dependent on previous variable (different option for Y1 v other year)
+Dt1_MandE <- sample(x = c("Yes", "No"),
+                  size = n,
+                  replace = TRUE, 
+                  prob = c(.5, .5))
+
+#dependent on previous variable (no means this opens)
+Dt1_math <- sample(x = c("Yes", "No"),
+                 size = n,
+                 replace = TRUE, 
+                 prob = c(.25, .25))
+
+#dependent on previous variable (no means this opens)
+Dt1_eng <- sample(x = c("Yes", "No"),
+                size = n,
+                replace = TRUE, 
+                prob = c(.1, .15))
+
+#dependent on previous variable (no means this opens)
+Dt1_stem <- sample(x = c("Yes", "No"),
+                 size = n,
+                 replace = TRUE, 
+                 prob = c(.05, .05))
+
+#dependent on previous variable (no means this opens)
+Dt1_major <- sample(x = c("Yes", "No"),
+                  size = n,
+                  replace = TRUE, 
+                  prob = c(.02, .03))
+
+#dependent on previous variable (no means this opens)
+Dt1_gen_ed <- sample(x = c("Yes", "No"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.01, .02))
+
+#dependent on previous variable (no means this opens)
+Dt1_other_course <- sample(x = c("Yes", "No"),
+                         size = n,
+                         replace = TRUE, 
+                         prob = c(.01, .01))
+
+Dt1_disc <- sample(x = c("Arts & Humanities", 
+                       "Business",
+                       "Natural Sciences",
+                       "Social Sciences",
+                       "Professional Program",
+                       "Technical Program",
+                       "Other",
+                       "Undecided (none of the options above apply"),
+                 size = n,
+                 replace = TRUE, 
+                 prob = c(.15, .15, .1, .25, .1, .1, .05, .1))
+
+Dt1_deg <- sample(x = c("Associate's Degree", 
+                      "Bachelor's Degree",
+                      "Graduate Degree",
+                      "Technical Degree"),
+                size = n,
+                replace = TRUE, 
+                prob = c(.3, .4, .2, .1))
+
+
+Dt1_course_disc <- sample(x = c("Arts & Humanities", 
+                              "Business",
+                              "Natural Sciences",
+                              "Social Sciences",
+                              "Professional Program",
+                              "Technical Program",
+                              "Other"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.2, .2, .1, .25, .1, .1, .05))
+
+Dt1_age <- round(rnorm(n,21,1.5))
+
+Dt1_father_ed <- sample(x = c("I do not know/uncertain",
+                              "Elementary or Middle School",
+                              "Some High School",
+                              "High School Graduate",
+                              "Post High School Vocational Training",
+                              "Some College",
+                              "Associate’s Degree",
+                              "Bachelor’s Degree",
+                              "Post Graduate Degree (Masters, Doctorate, etc.)"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.04, .03, .03, .1, .2, .1, .2, .2, .1))
+
+
+Dt1_mother_ed <- sample(x = c("I do not know/uncertain",
+                              "Elementary or Middle School",
+                              "Some High School",
+                              "High School Graduate",
+                              "Post High School Vocational Training",
+                              "Some College",
+                              "Associate’s Degree",
+                              "Bachelor’s Degree",
+                              "Post Graduate Degree (Masters, Doctorate, etc.)"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.04, .03, .03, .1, .2, .1, .2, .2, .1))
+
+Dt1_disab <- sample(x = c("No", "Yes", "I prefer not to respond"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.8, .18, .02))
+
+#dependent on previous variable
+Dt1_disabreg <- sample(x = c("Yes", "No"),
+                       size = n,
+                       replace = TRUE, 
+                       prob = c(.12, .06))
+
+Rt1_per_income <- sample(x = c("I cannot make ends meet",
+                               "I am barely making it",
+                               "I am breaking even",
+                               "I have extra money after paying the bills",
+                               "I do not have to worry about money"),
+                         size = n,
+                         replace = TRUE, 
+                         prob = c(.2, .2, .2, .2, .2))
+
+Rt1_income <- sample(x = c("I don't know",
+                           "<$15,000",
+                           "$15,001-$25,000",
+                           "$25,001-$35,000",
+                           "$35,001- $50,000",
+                           "$50,001-$75,000",
+                           "$75,001-$100,000",
+                           "$100,001-$150,000",
+                           ">$150,000"),
+                     size = n,
+                     replace = TRUE, 
+                     prob = c(.1, .2, .1, .1, .1, .1, .1, .1, .1))
+
+Nt1_work <- sample(x = c("No", "Yes - On campus", "Yes - Off campus"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.5, .25, .25))
+
+Nt1_homeless <- sample(x = c("No", "Yes"),
+                       size = n,
+                       replace = TRUE, 
+                       prob = c(.92, .08))
+
+Nt1_couchsurf <- sample(x = c("No", "Yes"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.92, .08))
+
+St1_per_class <- sample(x = c("Prefer not to answer",
+                              "Lower class",
+                              "Lower middle class",
+                              "Middle class",
+                              "Upper middle class",
+                              "Upper class"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.1, .15, .25, .25, .15, .1))
+
+
+St1_per_ses <- sample(x = c("1 - The people at the very bottom", "2", "3", "4", "5",
+                            "6", "7", "8", "9", "10 - The people at the very top"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.1, .1, .1, .1, .1, .1, .1, .1, .1, .1))
+
+
+Nt1_pell_selfreport <- sample(x = c("No", "Yes", "Unsure"),
+                              size = n,
+                              replace = TRUE, 
+                              prob = c(.45, .45, .1))
+
+St1_mot_a_1 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_a_2 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_a_3 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_a_4 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_a_5 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_a_6 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_a_7 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_a_8 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_a_9 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_a_10 <- sample(x = c("Not at all important",
+                             "Slightly important", 
+                             "Somewhat important", 
+                             "Moderately important", 
+                             "Very important", 
+                             "Extremely important"),
+                       size = n,
+                       replace = TRUE, 
+                       prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_a_11 <- sample(x = c("Not at all important",
+                             "Slightly important", 
+                             "Somewhat important", 
+                             "Moderately important", 
+                             "Very important", 
+                             "Extremely important"),
+                       size = n,
+                       replace = TRUE, 
+                       prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_b_1 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_b_2 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_b_3 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_b_4 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_b_5 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_b_6 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_b_7 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_b_8 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_mot_b_9 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_bel_bu1 <- sample(x = c("Strongly disagree", 
+                            "Disagree",
+                            "Slightly disagree",
+                            "Slightly agree",
+                            "Agree",
+                            "Strongly agree"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+
+St1_bel_bu2 <- sample(x = c("Strongly disagree", 
+                            "Disagree",
+                            "Slightly disagree",
+                            "Slightly agree",
+                            "Agree",
+                            "Strongly agree"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_bel_bu5 <- sample(x = c("Never",
+                            "Hardly ever",
+                            "Sometimes",
+                            "Frequently",
+                            "Very often",
+                            "Always"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_bel_bujor <- sample(x = c("Strongly disagree", 
+                         "Disagree",
+                         "Slightly disagree",
+                         "Slightly agree",
+                         "Agree",
+                         "Strongly agree"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_bel1 <- sample(x = c("Strongly disagree", 
+                         "Disagree",
+                         "Slightly disagree",
+                         "Slightly agree",
+                         "Agree",
+                         "Strongly agree"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_bel2 <- sample(x = c("Strongly disagree", 
+                         "Disagree",
+                         "Slightly disagree",
+                         "Slightly agree",
+                         "Agree",
+                         "Strongly agree"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_v1 <- sample(x = c("Strongly disagree", 
+                       "Disagree",
+                       "Slightly disagree",
+                       "Slightly agree",
+                       "Agree",
+                       "Strongly agree"),
+                 size = n,
+                 replace = TRUE, 
+                 prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_v2 <- sample(x = c("Strongly disagree", 
+                       "Disagree",
+                       "Slightly disagree",
+                       "Slightly agree",
+                       "Agree",
+                       "Strongly agree"),
+                 size = n,
+                 replace = TRUE, 
+                 prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_ap1 <- sample(x = c("Strongly disagree", 
+                        "Disagree",
+                        "Slightly disagree",
+                        "Slightly agree",
+                        "Agree",
+                        "Strongly agree"),
+                  size = n,
+                  replace = TRUE, 
+                  prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_toi1 <- sample(x = c("Strongly disagree", 
+                         "Disagree",
+                         "Slightly disagree",
+                         "Slightly agree",
+                         "Agree",
+                         "Strongly agree"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_toi2 <- sample(x = c("Strongly disagree", 
+                         "Disagree",
+                         "Slightly disagree",
+                         "Slightly agree",
+                         "Agree",
+                         "Strongly agree"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_bel_bu1 <- sample(x = c("Strongly disagree", 
+                               "Disagree",
+                               "Slightly disagree",
+                               "Slightly agree",
+                               "Agree",
+                               "Strongly agree"),
+                         size = n,
+                         replace = TRUE, 
+                         prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_bel_bu2 <- sample(x = c("Never",
+                               "Hardly ever",
+                               "Sometimes",
+                               "Frequently",
+                               "Very often",
+                               "Always"),
+                         size = n,
+                         replace = TRUE, 
+                         prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_bel1 <- sample(x = c("Strongly disagree", 
+                            "Disagree",
+                            "Slightly disagree",
+                            "Slightly agree",
+                            "Agree",
+                            "Strongly agree"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_v1 <- sample(x = c("Strongly disagree", 
+                          "Disagree",
+                          "Slightly disagree",
+                          "Slightly agree",
+                          "Agree",
+                          "Strongly agree"),
+                    size = n,
+                    replace = TRUE, 
+                    prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_v2 <- sample(x = c("Strongly disagree", 
+                          "Disagree",
+                          "Slightly disagree",
+                          "Slightly agree",
+                          "Agree",
+                          "Strongly agree"),
+                    size = n,
+                    replace = TRUE, 
+                    prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_v3 <- sample(x = c("Strongly disagree", 
+                          "Disagree",
+                          "Slightly disagree",
+                          "Slightly agree",
+                          "Agree",
+                          "Strongly agree"),
+                    size = n,
+                    replace = TRUE, 
+                    prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_ap1 <- sample(x = c("Strongly disagree", 
+                           "Disagree",
+                           "Slightly disagree",
+                           "Slightly agree",
+                           "Agree",
+                           "Strongly agree"),
+                     size = n,
+                     replace = TRUE, 
+                     prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_toi1 <- sample(x = c("Strongly disagree", 
+                            "Disagree",
+                            "Slightly disagree",
+                            "Slightly agree",
+                            "Agree",
+                            "Strongly agree"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_toi2 <- sample(x = c("Strongly disagree", 
+                            "Disagree",
+                            "Slightly disagree",
+                            "Slightly agree",
+                            "Agree",
+                            "Strongly agree"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_pfbel1 <- sample(x = c("Strongly disagree", 
+                           "Disagree",
+                           "Slightly disagree",
+                           "Slightly agree",
+                           "Agree",
+                           "Strongly agree"),
+                     size = n,
+                     replace = TRUE, 
+                     prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_pfbel2 <- sample(x = c("Strongly disagree", 
+                           "Disagree",
+                           "Slightly disagree",
+                           "Slightly agree",
+                           "Agree",
+                           "Strongly agree"),
+                     size = n,
+                     replace = TRUE, 
+                     prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_pfv1 <- sample(x = c("Strongly disagree", 
+                         "Disagree",
+                         "Slightly disagree",
+                         "Slightly agree",
+                         "Agree",
+                         "Strongly agree"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_pfv2 <- sample(x = c("Strongly disagree", 
+                         "Disagree",
+                         "Slightly disagree",
+                         "Slightly agree",
+                         "Agree",
+                         "Strongly agree"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_pfap1 <- sample(x = c("Strongly disagree", 
+                          "Disagree",
+                          "Slightly disagree",
+                          "Slightly agree",
+                          "Agree",
+                          "Strongly agree"),
+                    size = n,
+                    replace = TRUE, 
+                    prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_pftoi1 <- sample(x = c("Strongly disagree", 
+                           "Disagree",
+                           "Slightly disagree",
+                           "Slightly agree",
+                           "Agree",
+                           "Strongly agree"),
+                     size = n,
+                     replace = TRUE, 
+                     prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_pftoi2 <- sample(x = c("Strongly disagree", 
+                           "Disagree",
+                           "Slightly disagree",
+                           "Slightly agree",
+                           "Agree",
+                           "Strongly agree"),
+                     size = n,
+                     replace = TRUE, 
+                     prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_pfbel1 <- sample(x = c("Strongly disagree", 
+                              "Disagree",
+                              "Slightly disagree",
+                              "Slightly agree",
+                              "Agree",
+                              "Strongly agree"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_pfbel2 <- sample(x = c("Strongly disagree", 
+                              "Disagree",
+                              "Slightly disagree",
+                              "Slightly agree",
+                              "Agree",
+                              "Strongly agree"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_pfv1 <- sample(x = c("Strongly disagree", 
+                            "Disagree",
+                            "Slightly disagree",
+                            "Slightly agree",
+                            "Agree",
+                            "Strongly agree"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_pfv2 <- sample(x = c("Strongly disagree", 
+                            "Disagree",
+                            "Slightly disagree",
+                            "Slightly agree",
+                            "Agree",
+                            "Strongly agree"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_pfv3 <- sample(x = c("Strongly disagree", 
+                            "Disagree",
+                            "Slightly disagree",
+                            "Slightly agree",
+                            "Agree",
+                            "Strongly agree"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_pfap1 <- sample(x = c("Strongly disagree", 
+                             "Disagree",
+                             "Slightly disagree",
+                             "Slightly agree",
+                             "Agree",
+                             "Strongly agree"),
+                       size = n,
+                       replace = TRUE, 
+                       prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_pfap2 <- sample(x = c("Strongly disagree", 
+                             "Disagree",
+                             "Slightly disagree",
+                             "Slightly agree",
+                             "Agree",
+                             "Strongly agree"),
+                       size = n,
+                       replace = TRUE, 
+                       prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_pftoi1 <- sample(x = c("Strongly disagree", 
+                              "Disagree",
+                              "Slightly disagree",
+                              "Slightly agree",
+                              "Agree",
+                              "Strongly agree"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.05, .15, .15, .2, .25, .2))
+
+St1_sp_pftoi2 <- sample(x = c("Strongly disagree", 
+                              "Disagree",
+                              "Slightly disagree",
+                              "Slightly agree",
+                              "Agree",
+                              "Strongly agree"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.05, .15, .15, .2, .25, .2))
+
+
+
+
+# create data.frame
+raw_df <- data.frame(Dt1_PartID, 
+                     Dt1_age,
+                     Dt1_course_disc,
+                     Dt1_deg,
+                     Dt1_disc,
+                     Dt1_eng,
+                     Dt1_female,
+                     Dt1_gen_ed,
+                     Dt1_major,
+                     Dt1_MandE,
+                     Dt1_math,
+                     Dt1_other_course,
+                     Dt1_race_ML,
+                     Dt1_school_RAW,
+                     Dt1_stem,
+                     Dt1_year,
+                     Dt1_disabreg,
+                     Dt1_father_ed,
+                     Dt1_mother_ed,
+                     Nt1_couchsurf,
+                     Nt1_homeless,
+                     Nt1_pell_selfreport,
+                     Nt1_work,
+                     Dt1_disab,
+                     Rt1_income,
+                     Rt1_per_income,
+                     St1_per_ses,
+                     St1_mot_a_1, St1_mot_a_2, St1_mot_a_3, St1_mot_a_4,
+                     St1_mot_a_5, St1_mot_a_6, St1_mot_a_7, St1_mot_a_8,
+                     St1_mot_a_9, St1_mot_a_10, St1_mot_a_11, St1_mot_b_1,
+                     St1_mot_b_2, St1_mot_b_3, St1_mot_b_4, St1_mot_b_5,
+                     St1_mot_b_6, St1_mot_b_7, St1_mot_b_8,
+                     St1_bel_bu1, St1_bel_bu2, St1_bel_bu5, St1_bel1, St1_bel2,
+                     St1_v1,  St1_v2, St1_ap1, St1_toi1, St1_toi2,
+                     St1_sp_bel_bu1, St1_sp_bel_bu2, St1_sp_bel1, St1_sp_v1,
+                     St1_sp_v2, St1_sp_v3, St1_sp_ap1, St1_sp_toi1, St1_sp_toi2,
+                     St1_pfbel1, St1_pfbel2, St1_pfv1, St1_pfv2, St1_pfap1,
+                     St1_pftoi1, St1_pftoi2, St1_sp_pfbel1, St1_sp_pfbel2,
+                     St1_sp_pfv1, St1_sp_pfv2, St1_sp_pfv3, St1_sp_pfap1, 
+                     St1_sp_pfap2, St1_sp_pftoi1, St1_sp_pftoi2)
+
+# randomly replace values with NA
+d_pre <- as.data.frame(
+  apply(raw_df, 
+        1:2, 
+        \(x) sample(c(x, NA), 
+                    1, 
+                    prob=c((1 - .1), .1))))
+
+# Make numeric
+
+library(dplyr)
+
+d_pre = d_pre %>% dplyr::mutate(dplyr::across(
+  .cols = c("St1_bel_bu2", "St1_bel1", "St1_bel2",
+              "St1_v1",  "St1_v2", "St1_ap1", "St1_toi1", "St1_toi2",
+              "St1_sp_bel_bu1", "St1_sp_bel1", "St1_sp_v1",
+              "St1_sp_v2", "St1_sp_v3", "St1_sp_ap1", "St1_sp_toi1", "St1_sp_toi2",
+              "St1_pfbel1", "St1_pfbel2", "St1_pfv1", "St1_pfv2", "St1_pfap1",
+              "St1_pftoi1", "St1_pftoi2", "St1_sp_pfbel1", "St1_sp_pfbel2",
+              "St1_sp_pfv1", "St1_sp_pfv2", "St1_sp_pfv3", "St1_sp_pfap1", 
+              "St1_sp_pfap2", "St1_sp_pftoi1", "St1_sp_pftoi2"),
+  .fns = list(
+    ~dplyr::recode(
+      .x,
+      "Strongly disagree" = 1,
+      "Disagree" = 2,
+      "Slightly disagree" = 3,
+      "Slightly agree" = 4,
+      "Agree" = 5,
+      "Strongly agree" = 6,
+    )
+  ),
+  .names = "{.col}_num"
+))
+
+d_pre = d_pre %>% dplyr::mutate(dplyr::across(
+  .cols = c(starts_with("St1_mot")),
+  .fns = list(
+    ~dplyr::recode(
+      .x,
+      "Not at all important" = 1,
+      "Slightly important" = 2,
+      "Somewhat important" = 3,
+      "Moderately important" = 4,
+      "Very important" = 5,
+      "Extremely important" = 6,
+    )
+  ),
+  .names = "{.col}_num"
+))
+
+d_pre = d_pre %>% dplyr::mutate(dplyr::across(
+  .cols = c("St1_bel_bu5", "St1_sp_bel_bu2",),
+  .fns = list(
+    ~dplyr::recode(
+      .x,
+      "Never" = 1,
+    "Hardly ever" = 2,
+      "Sometimes" = 3,
+      "Frequently" = 4,
+      "Very often" = 5,
+      "Always" = 6,
+    )
+  ),
+  .names = "{.col}_num"
+))
+
+
+                    
+```
+
+## Create a simulated post dataset
+
+``` {r include = TRUE}
+
+# set seed
+set.seed(123)
+
+# set sample size
+n = 3500
+
+# simulate variables
+Dt2_PartID <- 1:n
+
+Dt2_female <- sample(x = c("Male", "Female", "Non-binary", "Other", "Prefer not to say"), 
+                 size = n,
+                 replace = TRUE, 
+                 prob = c(.45, .45, .02, .02, .01))
+
+
+#gpa <- round(rnorm(n = n, mean = 2.8, sd = .3), 2) #no gpa yet
+
+Dt2_race_ML <- sample(x = c("Black or African American", 
+                               "Asian (Asian Indian, Cambodian, Chinese, Japanese, Korean, Malaysian, Pakistani, Filipino, Thai, or Vietnamese)", 
+                               "White",
+                                "Hispanic / Latinx",
+                                "American Indian or Alaska Native",
+                                "Native Hawaiian or Other Pacific Islander (Hawaiian, Guamanian, Chamorro, Samoan, or other Pacific Islander)",
+                                "Other (please specify)"), 
+                         size = n,
+                         replace = TRUE, 
+                         prob = c(.18, .1, .4, .18, .05, .05, .04))
+
+Dt2_school_RAW <- sample(x = c("Grambling State University", 
+                             "Louisiana Tech University",
+                             "McNeese State University",
+                             "Nicholls State University",
+                             "Northwestern State University",
+                             "Southeastern Louisiana University",
+                             "University of Louisiana at Lafayette",
+                             "University of Louisiana at Monroe",
+                             "University of New Orleans",
+                             "LSU A&M",
+                             "LSU Alexandria",
+                             "LSU Eunice",
+                             "LSU Shreveport",
+                             "LSU Pennington Biomedical Research Center",
+                             "LSU Health Sciences Center New Orleans",
+                             "LSU Health Sciences Center Shreveport",
+                             "Southern University, Baton Rouge",
+                             "Southern University, New Orleans",
+                             "Southern University, Shreveport",
+                             "Southern University Law Center",
+                             "Baton Rouge Community College",
+                             "Bossier Parish Community College",
+                             "Central Louisiana Technical Community College",
+                             "Delgado Community College",
+                             "Louisiana Delta Community College",
+                             "Fletcher Technical Community College",
+                             "Northshore Technical Community College",
+                             "Northwest Louisiana Technical Community College",
+                             "Nunez Community College",
+                             "River Parishes Community College",
+                             "South Louisiana Community College",
+                             "SOWELA Technical Community College",
+                             "Other"),
+                       size = n,
+                       replace = TRUE, 
+                       prob = c(.03, .03, .03, .03, .03, .03, .03, .03,
+                                .03, .04, .03, .03, .03, .03, .03, .03,
+                                .03, .03, .03, .03, .03, .03, .03, .03,
+                                .03, .03, .03, .03, .03, .03, .03, .03, .03))
+
+Dt2_year <- sample(x = c("First-year student", 
+                       "Second-year student",
+                       "Third-year student",
+                       "Fourth-year student",
+                       "Fifth-or-more year student",
+                       "Graduate student",
+                       "Other"),
+                 size = n,
+                 replace = TRUE, 
+                 prob = c(.2, .2, .2, .2, .08, .08, .04))
+
+#dependent on previous variable (different option for Y1 v other year)
+Dt2_MandE <- sample(x = c("Yes", "No"),
+                  size = n,
+                  replace = TRUE, 
+                  prob = c(.5, .5))
+
+#dependent on previous variable (no means this opens)
+Dt2_math <- sample(x = c("Yes", "No"),
+                 size = n,
+                 replace = TRUE, 
+                 prob = c(.25, .25))
+
+#dependent on previous variable (no means this opens)
+Dt2_eng <- sample(x = c("Yes", "No"),
+                size = n,
+                replace = TRUE, 
+                prob = c(.1, .15))
+
+#dependent on previous variable (no means this opens)
+Dt2_stem <- sample(x = c("Yes", "No"),
+                 size = n,
+                 replace = TRUE, 
+                 prob = c(.05, .05))
+
+#dependent on previous variable (no means this opens)
+Dt2_major <- sample(x = c("Yes", "No"),
+                  size = n,
+                  replace = TRUE, 
+                  prob = c(.02, .03))
+
+#dependent on previous variable (no means this opens)
+Dt2_gen_ed <- sample(x = c("Yes", "No"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.01, .02))
+
+#dependent on previous variable (no means this opens)
+Dt2_other_course <- sample(x = c("Yes", "No"),
+                         size = n,
+                         replace = TRUE, 
+                         prob = c(.01, .01))
+
+Dt2_disc <- sample(x = c("Arts & Humanities", 
+                       "Business",
+                       "Natural Sciences",
+                       "Social Sciences",
+                       "Professional Program",
+                       "Technical Program",
+                       "Other",
+                       "Undecided (none of the options above apply"),
+                 size = n,
+                 replace = TRUE, 
+                 prob = c(.15, .15, .1, .25, .1, .1, .05, .1))
+
+Dt2_deg <- sample(x = c("Associate's Degree", 
+                      "Bachelor's Degree",
+                      "Graduate Degree",
+                      "Technical Degree"),
+                size = n,
+                replace = TRUE, 
+                prob = c(.3, .4, .2, .1))
+
+
+Dt2_course_disc <- sample(x = c("Arts & Humanities", 
+                              "Business",
+                              "Natural Sciences",
+                              "Social Sciences",
+                              "Professional Program",
+                              "Technical Program",
+                              "Other"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.2, .2, .1, .25, .1, .1, .05))
+
+Dt2_age <- round(rnorm(n,21,1.5))
+
+Dt2_father_ed <- sample(x = c("I do not know/uncertain",
+                              "Elementary or Middle School",
+                              "Some High School",
+                              "High School Graduate",
+                              "Post High School Vocational Training",
+                              "Some College",
+                              "Associate’s Degree",
+                              "Bachelor’s Degree",
+                              "Post Graduate Degree (Masters, Doctorate, etc.)"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.04, .03, .03, .1, .2, .1, .2, .2, .1))
+
+
+Dt2_mother_ed <- sample(x = c("I do not know/uncertain",
+                              "Elementary or Middle School",
+                              "Some High School",
+                              "High School Graduate",
+                              "Post High School Vocational Training",
+                              "Some College",
+                              "Associate’s Degree",
+                              "Bachelor’s Degree",
+                              "Post Graduate Degree (Masters, Doctorate, etc.)"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.04, .03, .03, .1, .2, .1, .2, .2, .1))
+
+Dt2_disab <- sample(x = c("No", "Yes", "I prefer not to respond"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.8, .18, .02))
+
+#dependent on previous variable
+Dt2_disabreg <- sample(x = c("Yes", "No"),
+                       size = n,
+                       replace = TRUE, 
+                       prob = c(.12, .06))
+
+Rt2_per_income <- sample(x = c("I cannot make ends meet",
+                               "I am barely making it",
+                               "I am breaking even",
+                               "I have extra money after paying the bills",
+                               "I do not have to worry about money"),
+                         size = n,
+                         replace = TRUE, 
+                         prob = c(.2, .2, .2, .2, .2))
+
+Rt2_income <- sample(x = c("I don't know",
+                           "<$15,000",
+                           "$15,001-$25,000",
+                           "$25,001-$35,000",
+                           "$35,001- $50,000",
+                           "$50,001-$75,000",
+                           "$75,001-$100,000",
+                           "$100,001-$150,000",
+                           ">$150,000"),
+                     size = n,
+                     replace = TRUE, 
+                     prob = c(.1, .2, .1, .1, .1, .1, .1, .1, .1))
+
+Nt2_work <- sample(x = c("No", "Yes - On campus", "Yes - Off campus"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.5, .25, .25))
+
+Nt2_homeless <- sample(x = c("No", "Yes"),
+                       size = n,
+                       replace = TRUE, 
+                       prob = c(.92, .08))
+
+Nt2_couchsurf <- sample(x = c("No", "Yes"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.92, .08))
+
+St2_per_class <- sample(x = c("Prefer not to answer",
+                              "Lower class",
+                              "Lower middle class",
+                              "Middle class",
+                              "Upper middle class",
+                              "Upper class"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.1, .15, .25, .25, .15, .1))
+
+
+St2_per_ses <- sample(x = c("1 - The people at the very bottom", "2", "3", "4", "5",
+                            "6", "7", "8", "9", "10 - The people at the very top"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.1, .1, .1, .1, .1, .1, .1, .1, .1, .1))
+
+
+Nt2_pell_selfreport <- sample(x = c("No", "Yes", "Unsure"),
+                              size = n,
+                              replace = TRUE, 
+                              prob = c(.45, .45, .1))
+
+St2_mot_a_1 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_a_2 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_a_3 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_a_4 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_a_5 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_a_6 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_a_7 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_a_8 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_a_9 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_a_10 <- sample(x = c("Not at all important",
+                             "Slightly important", 
+                             "Somewhat important", 
+                             "Moderately important", 
+                             "Very important", 
+                             "Extremely important"),
+                       size = n,
+                       replace = TRUE, 
+                       prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_a_11 <- sample(x = c("Not at all important",
+                             "Slightly important", 
+                             "Somewhat important", 
+                             "Moderately important", 
+                             "Very important", 
+                             "Extremely important"),
+                       size = n,
+                       replace = TRUE, 
+                       prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_b_1 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_b_2 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_b_3 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_b_4 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_b_5 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_b_6 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_b_7 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_b_8 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_mot_b_9 <- sample(x = c("Not at all important",
+                            "Slightly important", 
+                            "Somewhat important", 
+                            "Moderately important", 
+                            "Very important", 
+                            "Extremely important"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_bel_bu1 <- sample(x = c("Strongly disagree", 
+                            "Disagree",
+                            "Slightly disagree",
+                            "Slightly agree",
+                            "Agree",
+                            "Strongly agree"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+
+St2_bel_bu2 <- sample(x = c("Strongly disagree", 
+                            "Disagree",
+                            "Slightly disagree",
+                            "Slightly agree",
+                            "Agree",
+                            "Strongly agree"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_bel_bu5 <- sample(x = c("Never",
+                            "Hardly ever",
+                            "Sometimes",
+                            "Frequently",
+                            "Very often",
+                            "Always"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_bel_bujor <- sample(x = c("Strongly disagree", 
+                         "Disagree",
+                         "Slightly disagree",
+                         "Slightly agree",
+                         "Agree",
+                         "Strongly agree"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_bel1 <- sample(x = c("Strongly disagree", 
+                         "Disagree",
+                         "Slightly disagree",
+                         "Slightly agree",
+                         "Agree",
+                         "Strongly agree"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_bel2 <- sample(x = c("Strongly disagree", 
+                         "Disagree",
+                         "Slightly disagree",
+                         "Slightly agree",
+                         "Agree",
+                         "Strongly agree"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_v1 <- sample(x = c("Strongly disagree", 
+                       "Disagree",
+                       "Slightly disagree",
+                       "Slightly agree",
+                       "Agree",
+                       "Strongly agree"),
+                 size = n,
+                 replace = TRUE, 
+                 prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_v2 <- sample(x = c("Strongly disagree", 
+                       "Disagree",
+                       "Slightly disagree",
+                       "Slightly agree",
+                       "Agree",
+                       "Strongly agree"),
+                 size = n,
+                 replace = TRUE, 
+                 prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_ap1 <- sample(x = c("Strongly disagree", 
+                        "Disagree",
+                        "Slightly disagree",
+                        "Slightly agree",
+                        "Agree",
+                        "Strongly agree"),
+                  size = n,
+                  replace = TRUE, 
+                  prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_toi1 <- sample(x = c("Strongly disagree", 
+                         "Disagree",
+                         "Slightly disagree",
+                         "Slightly agree",
+                         "Agree",
+                         "Strongly agree"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_toi2 <- sample(x = c("Strongly disagree", 
+                         "Disagree",
+                         "Slightly disagree",
+                         "Slightly agree",
+                         "Agree",
+                         "Strongly agree"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_bel_bu1 <- sample(x = c("Strongly disagree", 
+                               "Disagree",
+                               "Slightly disagree",
+                               "Slightly agree",
+                               "Agree",
+                               "Strongly agree"),
+                         size = n,
+                         replace = TRUE, 
+                         prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_bel_bu2 <- sample(x = c("Never",
+                               "Hardly ever",
+                               "Sometimes",
+                               "Frequently",
+                               "Very often",
+                               "Always"),
+                         size = n,
+                         replace = TRUE, 
+                         prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_bel1 <- sample(x = c("Strongly disagree", 
+                            "Disagree",
+                            "Slightly disagree",
+                            "Slightly agree",
+                            "Agree",
+                            "Strongly agree"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_v1 <- sample(x = c("Strongly disagree", 
+                          "Disagree",
+                          "Slightly disagree",
+                          "Slightly agree",
+                          "Agree",
+                          "Strongly agree"),
+                    size = n,
+                    replace = TRUE, 
+                    prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_v2 <- sample(x = c("Strongly disagree", 
+                          "Disagree",
+                          "Slightly disagree",
+                          "Slightly agree",
+                          "Agree",
+                          "Strongly agree"),
+                    size = n,
+                    replace = TRUE, 
+                    prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_v3 <- sample(x = c("Strongly disagree", 
+                          "Disagree",
+                          "Slightly disagree",
+                          "Slightly agree",
+                          "Agree",
+                          "Strongly agree"),
+                    size = n,
+                    replace = TRUE, 
+                    prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_ap1 <- sample(x = c("Strongly disagree", 
+                           "Disagree",
+                           "Slightly disagree",
+                           "Slightly agree",
+                           "Agree",
+                           "Strongly agree"),
+                     size = n,
+                     replace = TRUE, 
+                     prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_toi1 <- sample(x = c("Strongly disagree", 
+                            "Disagree",
+                            "Slightly disagree",
+                            "Slightly agree",
+                            "Agree",
+                            "Strongly agree"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_toi2 <- sample(x = c("Strongly disagree", 
+                            "Disagree",
+                            "Slightly disagree",
+                            "Slightly agree",
+                            "Agree",
+                            "Strongly agree"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_pfbel1 <- sample(x = c("Strongly disagree", 
+                           "Disagree",
+                           "Slightly disagree",
+                           "Slightly agree",
+                           "Agree",
+                           "Strongly agree"),
+                     size = n,
+                     replace = TRUE, 
+                     prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_pfbel2 <- sample(x = c("Strongly disagree", 
+                           "Disagree",
+                           "Slightly disagree",
+                           "Slightly agree",
+                           "Agree",
+                           "Strongly agree"),
+                     size = n,
+                     replace = TRUE, 
+                     prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_pfv1 <- sample(x = c("Strongly disagree", 
+                         "Disagree",
+                         "Slightly disagree",
+                         "Slightly agree",
+                         "Agree",
+                         "Strongly agree"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_pfv2 <- sample(x = c("Strongly disagree", 
+                         "Disagree",
+                         "Slightly disagree",
+                         "Slightly agree",
+                         "Agree",
+                         "Strongly agree"),
+                   size = n,
+                   replace = TRUE, 
+                   prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_pfap1 <- sample(x = c("Strongly disagree", 
+                          "Disagree",
+                          "Slightly disagree",
+                          "Slightly agree",
+                          "Agree",
+                          "Strongly agree"),
+                    size = n,
+                    replace = TRUE, 
+                    prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_pftoi1 <- sample(x = c("Strongly disagree", 
+                           "Disagree",
+                           "Slightly disagree",
+                           "Slightly agree",
+                           "Agree",
+                           "Strongly agree"),
+                     size = n,
+                     replace = TRUE, 
+                     prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_pftoi2 <- sample(x = c("Strongly disagree", 
+                           "Disagree",
+                           "Slightly disagree",
+                           "Slightly agree",
+                           "Agree",
+                           "Strongly agree"),
+                     size = n,
+                     replace = TRUE, 
+                     prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_pfbel1 <- sample(x = c("Strongly disagree", 
+                              "Disagree",
+                              "Slightly disagree",
+                              "Slightly agree",
+                              "Agree",
+                              "Strongly agree"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_pfbel2 <- sample(x = c("Strongly disagree", 
+                              "Disagree",
+                              "Slightly disagree",
+                              "Slightly agree",
+                              "Agree",
+                              "Strongly agree"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_pfv1 <- sample(x = c("Strongly disagree", 
+                            "Disagree",
+                            "Slightly disagree",
+                            "Slightly agree",
+                            "Agree",
+                            "Strongly agree"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_pfv2 <- sample(x = c("Strongly disagree", 
+                            "Disagree",
+                            "Slightly disagree",
+                            "Slightly agree",
+                            "Agree",
+                            "Strongly agree"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_pfv3 <- sample(x = c("Strongly disagree", 
+                            "Disagree",
+                            "Slightly disagree",
+                            "Slightly agree",
+                            "Agree",
+                            "Strongly agree"),
+                      size = n,
+                      replace = TRUE, 
+                      prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_pfap1 <- sample(x = c("Strongly disagree", 
+                             "Disagree",
+                             "Slightly disagree",
+                             "Slightly agree",
+                             "Agree",
+                             "Strongly agree"),
+                       size = n,
+                       replace = TRUE, 
+                       prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_pfap2 <- sample(x = c("Strongly disagree", 
+                             "Disagree",
+                             "Slightly disagree",
+                             "Slightly agree",
+                             "Agree",
+                             "Strongly agree"),
+                       size = n,
+                       replace = TRUE, 
+                       prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_pftoi1 <- sample(x = c("Strongly disagree", 
+                              "Disagree",
+                              "Slightly disagree",
+                              "Slightly agree",
+                              "Agree",
+                              "Strongly agree"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.05, .15, .15, .2, .25, .2))
+
+St2_sp_pftoi2 <- sample(x = c("Strongly disagree", 
+                              "Disagree",
+                              "Slightly disagree",
+                              "Slightly agree",
+                              "Agree",
+                              "Strongly agree"),
+                        size = n,
+                        replace = TRUE, 
+                        prob = c(.05, .15, .15, .2, .25, .2))
+
+
+
+
+# create data.frame
+raw_df <- data.frame(Dt2_PartID, 
+                     Dt2_age,
+                     Dt2_course_disc,
+                     Dt2_deg,
+                     Dt2_disc,
+                     Dt2_eng,
+                     Dt2_female,
+                     Dt2_gen_ed,
+                     Dt2_major,
+                     Dt2_MandE,
+                     Dt2_math,
+                     Dt2_other_course,
+                     Dt2_race_ML,
+                     Dt2_school_RAW,
+                     Dt2_stem,
+                     Dt2_year,
+                     Dt2_disabreg,
+                     Dt2_father_ed,
+                     Dt2_mother_ed,
+                     Nt2_couchsurf,
+                     Nt2_homeless,
+                     Nt2_pell_selfreport,
+                     Nt2_work,
+                     Dt2_disab,
+                     Rt2_income,
+                     Rt2_per_income,
+                     St2_per_ses,
+                     St2_mot_a_1, St2_mot_a_2, St2_mot_a_3, St2_mot_a_4,
+                     St2_mot_a_5, St2_mot_a_6, St2_mot_a_7, St2_mot_a_8,
+                     St2_mot_a_9, St2_mot_a_10, St2_mot_a_11, St2_mot_b_1,
+                     St2_mot_b_2, St2_mot_b_3, St2_mot_b_4, St2_mot_b_5,
+                     St2_mot_b_6, St2_mot_b_7, St2_mot_b_8,
+                     St2_bel_bu1, St2_bel_bu2, St2_bel_bu5, St2_bel1, St2_bel2,
+                     St2_v1,  St2_v2, St2_ap1, St2_toi1, St2_toi2,
+                     St2_sp_bel_bu1, St2_sp_bel_bu2, St2_sp_bel1, St2_sp_v1,
+                     St2_sp_v2, St2_sp_v3, St2_sp_ap1, St2_sp_toi1, St2_sp_toi2,
+                     St2_pfbel1, St2_pfbel2, St2_pfv1, St2_pfv2, St2_pfap1,
+                     St2_pftoi1, St2_pftoi2, St2_sp_pfbel1, St2_sp_pfbel2,
+                     St2_sp_pfv1, St2_sp_pfv2, St2_sp_pfv3, St2_sp_pfap1, 
+                     St2_sp_pfap2, St2_sp_pftoi1, St2_sp_pftoi2)
+
+# randomly replace values with NA
+d_post <- as.data.frame(
+  apply(raw_df, 
+        1:2, 
+        \(x) sample(c(x, NA), 
+                    1, 
+                    prob=c((1 - .1), .1))))
+
+# Make numeric
+
+library(dplyr)
+
+d_post = d_post %>% dplyr::mutate(dplyr::across(
+  .cols = c("St2_bel_bu2", "St2_bel1", "St2_bel2",
+              "St2_v1",  "St2_v2", "St2_ap1", "St2_toi1", "St2_toi2",
+              "St2_sp_bel_bu1", "St2_sp_bel1", "St2_sp_v1",
+              "St2_sp_v2", "St2_sp_v3", "St2_sp_ap1", "St2_sp_toi1", "St2_sp_toi2",
+              "St2_pfbel1", "St2_pfbel2", "St2_pfv1", "St2_pfv2", "St2_pfap1",
+              "St2_pftoi1", "St2_pftoi2", "St2_sp_pfbel1", "St2_sp_pfbel2",
+              "St2_sp_pfv1", "St2_sp_pfv2", "St2_sp_pfv3", "St2_sp_pfap1", 
+              "St2_sp_pfap2", "St2_sp_pftoi1", "St2_sp_pftoi2"),
+  .fns = list(
+    ~dplyr::recode(
+      .x,
+      "Strongly disagree" = 1,
+      "Disagree" = 2,
+      "Slightly disagree" = 3,
+      "Slightly agree" = 4,
+      "Agree" = 5,
+      "Strongly agree" = 6,
+    )
+  ),
+  .names = "{.col}_num"
+))
+
+d_post = d_post %>% dplyr::mutate(dplyr::across(
+  .cols = c(starts_with("St2_mot")),
+  .fns = list(
+    ~dplyr::recode(
+      .x,
+      "Not at all important" = 1,
+      "Slightly important" = 2,
+      "Somewhat important" = 3,
+      "Moderately important" = 4,
+      "Very important" = 5,
+      "Extremely important" = 6,
+    )
+  ),
+  .names = "{.col}_num"
+))
+
+d_post = d_post %>% dplyr::mutate(dplyr::across(
+  .cols = c("St2_bel_bu5", "St2_sp_bel_bu2",),
+  .fns = list(
+    ~dplyr::recode(
+      .x,
+      "Never" = 1,
+    "Hardly ever" = 2,
+      "Sometimes" = 3,
+      "Frequently" = 4,
+      "Very often" = 5,
+      "Always" = 6,
+    )
+  ),
+  .names = "{.col}_num"
+))
+
+```
+
+
+## Data Management
+
+### Merging data across time points
+
+#### Zach Method A 
+
+Built in studying the use case of needing to bind and merge different datasets that had different elements of missing data in each. This also works to bind datasets together.
+
+``` {r include = TRUE}
+
+# create dummy data
+x_pre <- data.frame(p = c(1, 2, 3), a = c(1, 2, 3), b = c(4, 5, 6), d = c(3, 4, 5))
+x_post <- data.frame(p = c(1, 2, 3), a = c(5, 2, 9), c = c(4, 5, 6))
+y_pre <- data.frame(p = c(4, 5, 6), b = c(1, 2, 3), c = c(4, 5, 6))
+y_post <- data.frame(p = c(4, 5, 6), b = c(1, 2, 3), d = c(4, 5, 6), e = c(1, 2, 3))
+
+
+# make function
+my_fun <- function(df){
+  df_name <- deparse(substitute(df))
+  if (grepl("pre", df_name)) {
+    colnames(df)[-1] <- paste(colnames(df)[-1], "t1", sep = "_") 
+  }
+  else if (grepl("post", df_name)) {
+    colnames(df)[-1] <- paste(colnames(df)[-1], "t2", sep = "_")
+  }
+  return(df)
+}
+
+# create a list of data frames
+my_list <- list(x_pre = x_pre, x_post = x_post,
+                y_pre = y_pre, y_post = y_post)
+
+# for loop through list
+for (i in seq_along(my_list)) {
+  df_name <- names(my_list)[i]
+  if (grepl("pre", df_name)) {
+    colnames(my_list[[i]])[-1] <- paste(colnames(my_list[[i]])[-1], "t1", sep = "_") 
+  }
+  else if (grepl("post", df_name)) {
+    colnames(my_list[[i]])[-1] <- paste(colnames(my_list[[i]])[-1], "t2", sep = "_")
+  }
+}
+
+```
+
+#### Zach Method B
+
+Alternative approach (probably better). Uses anonymous function and map
+
+``` {r include = TRUE}
+
+# re-create the initial list of data frames
+my_list <- list(x_pre = x_pre, x_post = x_post,
+                y_pre = y_pre, y_post = y_post)
+
+my_list <- Map(
+  function(list_df, list_names) {
+    if (endsWith(list_names, "pre")) {
+      names(list_df)[-1] <- paste(names(list_df)[-1], "t1", sep = "_")
+    } 
+    else if (endsWith(list_names, "post")) {
+      names(list_df)[-1] <- paste(names(list_df)[-1], "t2", sep = "_")
+    }
+    list_df
+  }, 
+  my_list, 
+  names(my_list)
+)
+
+#merge all data frames together
+final_product <- my_list %>% 
+  reduce(full_join)
+  
+```
+
+
+#### Matt Method (before Zach method)
+
+``` {r include = TRUE}
+
+## not shown here, but typically need to clean dataset before merging
+
+merged_data <- d_pre %>% full_join(d_post, by = c("Dt1_PartID" = "Dt2_PartID"))
+
+## not shown here, but typically need to review the merged column and do additional cleaning
+
+```
+
+
+### Subsetting a dataset
+
+``` {r include = TRUE}
+
+# Selecting certain rows by index
+
+merged_data <- merged_data[c(22:60),]
+
+# Selecting certain columns by index
+
+merged_data <- merged_data[,c(8:27)]
+
+## This technique can be used to delete a set of columns
+
+data_1 <- merged_data %>% 
+  dplyr::select(-Nt1_work:-Nt1_homeless)
+
+# Filtering for a certain response or group
+
+newdata3 <- merged_data %>% 
+  filter(Dt1_age > 25)
+newdata4 <- merged_data %>% 
+  filter(Dt1_female_pre == "female" & Dt1_race_ML_pre == "Black or African American")
+newdata5 <- merged_data %>%
+  filter(Dt1_female_pre == "male" & Dt1_race_ML_pre == "Black or African American")
+
+```
+
+
+### Binding data together from various cohorts / surveys
+
+Matt's very laborious way of binding data together. One note is that the binding function cannot work if the variable names differ between the datasets.
+
+``` {r include = TRUE}
+
+## Select all of the columns in the datasets to make sure they are all the same 
+## and have the same names using dplyr::select(). Then, turn them all into data tables.
+
+data1 <- as.data.table(newdata5)
+data2 <- as.data.table(newdata6)
+
+## Next, fix all of the variable types to make sure the variable types in each dataset
+## are aligned. For example...
+
+#data1$v1_ch <- as.character(data1$v1)
+#data1$v2_int <- as.integer(data1$v2)
+#data2$v1_ch <- as.character(data2$v1)
+#data2$v2_int <- as.integer(data2$v2)
+
+## Then, bind the datasets
+
+fulldata <- funion(data1, data2) # a note: To use the funion function, there is a requirement that all data types align, so that step is necessary to use the function, along with the datasets being data.tables. This is why I would like a better way of doing this! Zach mentioned rbind() and merge(), so please overwrite this with better options. Thanks!
+
+```
+
+
+### Creating scale variables 
+
+#### Make mindset variables numeric
+
+This is done in the simulate dataset code, so see there for code for this procedure.
+
+#### Using mutate and addition
+
+``` {r include = TRUE}
+
+merged_data <- merged_data %>% 
+  mutate(St1_S_gen = ((St1_bel1 + St1_bel2) / 2), 
+         St1_P_gen = ((St1_v1 + St1_v2) / 2), 
+         St1_INTER_m = ((St1_mot_a_5 + St1_mot_a_6 + St1_mot_a_7 + St1_mot_a_8) / 4))
+
+```
+
+#### Using mutate and rowMeans
+
+Note: using na.rm=TRUE includes all responses, even when the respondent did not answer all of the items. So, if you want to only include complete respondents, use na.rm=FALSE.
+
+
+Zach also mentioned using across(), so feel free to add in that style here!
+
+``` {r include = TRUE}
+
+merged_data <- merged_data %>% 
+  mutate(St1_S_gen = rowMeans(c("St1_bel1","St1_bel2"), na.rm = TRUE)) %>%
+  mutate(St1_P_gen = rowMeans(c("St1_v1","St1_v2"), na.rm = TRUE)) %>%
+  mutate(St1_INTER_m = rowMeans(c("St1_mot_a_5", "St1_mot_a_6", "St1_mot_a_7", "St1_mot_a_8"), na.rm = TRUE))
+
+```
+
+#### Create composite variables with a custom rowMeans function
+
+This function was used for the Clifford Harm Scale (very long scale with lots of items to create the composite). Here is how it could be used with the LA BOR simulated dataset.
+
+``` {r include = TRUE}
+
+merged_data %>%
+  mutate(St1_P_gen = rowMeans(select(., starts_with("St1_v")), na.rm = TRUE)
+
+```
+
+
+### Analyzing descriptive statistics of all items to see if there are any issue with direction or values or other factors → data checking guidelines
+
+#### Quick way to look at means and SDs
+
+``` {r include = TRUE}
+
+table <- merged_data[c("St1_S_gen", "St1_P_gen", "St1_INTER_m")]
+
+table %>% tbl_summary(statistic = list(all_continuous() ~ "{mean} ({sd})"), 
+                       type = list(St1_S_gen ~ 'continuous',
+                                   St1_P_gen ~ 'continuous', 
+                                   St1_INTER_m ~ 'continuous'),
+                       digits = all_continuous() ~ 2,
+                       missing_text = "(Missing)")
+
+```
+
+
+#### More detailed way to look at descriptives
+
+``` {r include = TRUE}
+
+b1<- summarySE(merged_data, measurevar="St1_INTER_m", na.rm=TRUE)
+b2<- summarySE(merged_data, measurevar="St1_mot_a_5", na.rm=TRUE)
+b3<- summarySE(merged_data, measurevar="St1_mot_a_6", na.rm=TRUE)
+b4<- summarySE(merged_data, measurevar="St1_mot_a_7", na.rm=TRUE)
+b5<- summarySE(merged_data, measurevar="St1_mot_a_8", na.rm=TRUE)
+
+#Now, we're going to rename the mean (the 3rd variable) to actually be called mean
+names(b1)[3] <- "mean"
+names(b2)[3] <- "mean"
+names(b3)[3] <- "mean"
+names(b4)[3] <- "mean"
+names(b5)[3] <- "mean"
+
+# Now we are adding a variable that is the item text for what we're looking at
+b1$variable <- "Scale"
+b2$variable <- "Item 1"
+b3$variable <- "Item 2"
+b4$variable <- "Item 3"
+b5$variable <- "Item 4"
+
+
+# Now we are adding a variable that is the name of what we're looking at
+b1$Type <- "Scale"
+b2$Type <- "Item 1"
+b3$Type <- "Item 2"
+b4$Type <- "Item 3"
+b5$Type <- "Item 4"
+
+
+# Bind them all together!
+
+b <- rbind(b1,b2,b3,b4,b5)
+
+# Create table
+
+pander(b[c(7,2:6)], caption="Table for Scale and Items",justify="left",round=2)
+
+```
+
+#### More detailed way to look at descriptives using the map() function
+
+``` {r include = TRUE}
+
+# using map
+
+b0 <- map(
+  .x = c("St1_mot_a_5", "St1_mot_a_6", "St1_mot_a_7", "St1_mot_a_8"),
+  .f = ~ summarySE(merged_data, measurevar = .x, na.rm = TRUE)
+  )
+
+b0[[1]]
+
+```
+
+#### Look at descriptives using the map() and describe() functions
+
+``` {r include = TRUE}
+
+merged_data %>% 
+  select(St1_mot_a_5, St1_mot_a_6, St1_mot_a_7, St1_mot_a_8, St1_INTER_m) %>%
+  map(psych::describe)
+
+```
+
+### Handling missing data
+
+``` {r include = TRUE}
+
+
+```
+
+
+### Handling duplicates
+
+In this line, we need to identify which variable should not have duplicates to then select it when we remove duplicates
+
+``` {r include = TRUE}
+
+nd_data <- merged_data[!duplicated(merged_data$Dt1_PartID),]
+
+```
+
+
+### Identifying and removing outliers
+
+``` {r include = TRUE}
+
+
+
+```
+
+
+### Reverse scoring items
+
+the only issue here is that it is not recoding the variable to make a new version. Do you all know how to use a function in this case and have the result be new variables with unique names?
+
+``` {r include = TRUE}
+
+merged_data <- merged_data %>%
+    mutate_at(c("St1_toi1", "St1_toi2"),
+              ~ recode(., "1" = 6, "2" = 5, "3" = 4, 
+                          "4" = 3, "5" = 2, "6" = 1))
+
+```
+
