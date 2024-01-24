@@ -1986,7 +1986,7 @@ final_product <- my_list %>%
 
 ## not shown here, but typically need to clean dataset before merging
 
-merged_data <- d_pre %>% full_join(d_post, by = c("PartID"), suffix = c("_pre", "_post"))
+merged_data <- d_pre %>% full_join(d_post, by = c("Dt1_PartID" = "Dt2_PartID"))
 
 ## not shown here, but typically need to review the merged column and do additional cleaning
 
@@ -1999,11 +1999,11 @@ merged_data <- d_pre %>% full_join(d_post, by = c("PartID"), suffix = c("_pre", 
 
 # Selecting certain rows by index
 
-merged_data <- d[c(22:60),]
+merged_data <- merged_data[c(22:60),]
 
 # Selecting certain columns by index
 
-merged_data <- d[,c(8:27)]
+merged_data <- merged_data[,c(8:27)]
 
 ## This technique can be used to delete a set of columns
 
@@ -2013,11 +2013,11 @@ data_1 <- merged_data %>%
 # Filtering for a certain response or group
 
 newdata3 <- merged_data %>% 
-  filter(D_age_pre > 25)
+  filter(Dt1_age > 25)
 newdata4 <- merged_data %>% 
-  filter(D_female_pre == "female" & D_race_ML_pre == "Black or African American")
+  filter(Dt1_female_pre == "female" & Dt1_race_ML_pre == "Black or African American")
 newdata5 <- merged_data %>%
-  filter(D_female_pre == "male" & D_race_ML_pre == "Black or African American")
+  filter(Dt1_female_pre == "male" & Dt1_race_ML_pre == "Black or African American")
 
 ```
 
@@ -2060,9 +2060,9 @@ This is done in the simulate dataset code, so see there for code for this proced
 ``` {r include = TRUE}
 
 merged_data <- merged_data %>% 
-  mutate(St1_S_gen_pre = ((St1_bel1_pre + St1_bel2_pre) / 2), 
-         St1_P_gen_pre = ((St1_v1_pre + St1_v2_pre) / 2), 
-         St1_INTER_m_pre = ((St1_mot_a_5_pre + St1_mot_a_6_pre + St1_mot_a_7_pre + St1_mot_a_8_pre) / 4))
+  mutate(St1_S_gen = ((St1_bel1 + St1_bel2) / 2), 
+         St1_P_gen = ((St1_v1 + St1_v2) / 2), 
+         St1_INTER_m = ((St1_mot_a_5 + St1_mot_a_6 + St1_mot_a_7 + St1_mot_a_8) / 4))
 
 ```
 
@@ -2076,9 +2076,9 @@ Zach also mentioned using across(), so feel free to add in that style here!
 ``` {r include = TRUE}
 
 merged_data <- merged_data %>% 
-  mutate(St1_S_gen_pre = rowMeans(c("St1_bel1_pre","St1_bel2_pre"), na.rm = TRUE)) %>%
-  mutate(St1_P_gen_pre = rowMeans(c("St1_v1_pre","St1_v2_pre"), na.rm = TRUE)) %>%
-  mutate(St1_INTER_m_pre = rowMeans(c("St1_mot_a_5_pre", "St1_mot_a_6_pre", "St1_mot_a_7_pre", "St1_mot_a_8_pre"), na.rm = TRUE))
+  mutate(St1_S_gen = rowMeans(c("St1_bel1","St1_bel2"), na.rm = TRUE)) %>%
+  mutate(St1_P_gen = rowMeans(c("St1_v1","St1_v2"), na.rm = TRUE)) %>%
+  mutate(St1_INTER_m = rowMeans(c("St1_mot_a_5", "St1_mot_a_6", "St1_mot_a_7", "St1_mot_a_8"), na.rm = TRUE))
 
 ```
 
@@ -2089,7 +2089,7 @@ This function was used for the Clifford Harm Scale (very long scale with lots of
 ``` {r include = TRUE}
 
 merged_data %>%
-  mutate(St1_P_gen_pre = rowMeans(select(., starts_with("St1_v")), na.rm = TRUE)
+  mutate(St1_P_gen = rowMeans(select(., starts_with("St1_v")), na.rm = TRUE)
 
 ```
 
@@ -2100,12 +2100,12 @@ merged_data %>%
 
 ``` {r include = TRUE}
 
-table <- merged_data[c("St1_S_gen_pre", "St1_P_gen_pre", "St1_INTER_m_pre")]
+table <- merged_data[c("St1_S_gen", "St1_P_gen", "St1_INTER_m")]
 
 table %>% tbl_summary(statistic = list(all_continuous() ~ "{mean} ({sd})"), 
-                       type = list(St1_S_gen_pre ~ 'continuous',
-                                   St1_P_gen_pre ~ 'continuous', 
-                                   St1_INTER_m_pre ~ 'continuous'),
+                       type = list(St1_S_gen ~ 'continuous',
+                                   St1_P_gen ~ 'continuous', 
+                                   St1_INTER_m ~ 'continuous'),
                        digits = all_continuous() ~ 2,
                        missing_text = "(Missing)")
 
@@ -2116,11 +2116,11 @@ table %>% tbl_summary(statistic = list(all_continuous() ~ "{mean} ({sd})"),
 
 ``` {r include = TRUE}
 
-b1<- summarySE(merged_data, measurevar="St1_INTER_m_pre", na.rm=TRUE)
-b2<- summarySE(merged_data, measurevar="St1_mot_a_5_pre", na.rm=TRUE)
-b3<- summarySE(merged_data, measurevar="St1_mot_a_6_pre", na.rm=TRUE)
-b4<- summarySE(merged_data, measurevar="St1_mot_a_7_pre", na.rm=TRUE)
-b5<- summarySE(merged_data, measurevar="St1_mot_a_8_pre", na.rm=TRUE)
+b1<- summarySE(merged_data, measurevar="St1_INTER_m", na.rm=TRUE)
+b2<- summarySE(merged_data, measurevar="St1_mot_a_5", na.rm=TRUE)
+b3<- summarySE(merged_data, measurevar="St1_mot_a_6", na.rm=TRUE)
+b4<- summarySE(merged_data, measurevar="St1_mot_a_7", na.rm=TRUE)
+b5<- summarySE(merged_data, measurevar="St1_mot_a_8", na.rm=TRUE)
 
 #Now, we're going to rename the mean (the 3rd variable) to actually be called mean
 names(b1)[3] <- "mean"
@@ -2162,7 +2162,7 @@ pander(b[c(7,2:6)], caption="Table for Scale and Items",justify="left",round=2)
 # using map
 
 b0 <- map(
-  .x = c("St1_mot_a_5_pre", "St1_mot_a_6_pre", "St1_mot_a_7_pre", "St1_mot_a_8_pre"),
+  .x = c("St1_mot_a_5", "St1_mot_a_6", "St1_mot_a_7", "St1_mot_a_8"),
   .f = ~ summarySE(merged_data, measurevar = .x, na.rm = TRUE)
   )
 
@@ -2175,7 +2175,7 @@ b0[[1]]
 ``` {r include = TRUE}
 
 merged_data %>% 
-  select(St1_mot_a_5_pre, St1_mot_a_6_pre, St1_mot_a_7_pre, St1_mot_a_8_pre, St1_INTER_m_pre) %>%
+  select(St1_mot_a_5, St1_mot_a_6, St1_mot_a_7, St1_mot_a_8, St1_INTER_m) %>%
   map(psych::describe)
 
 ```
@@ -2194,7 +2194,7 @@ In this line, we need to identify which variable should not have duplicates to t
 
 ``` {r include = TRUE}
 
-nd_data <- merged_data[!duplicated(merged_data$PartID_pre),]
+nd_data <- merged_data[!duplicated(merged_data$Dt1_PartID),]
 
 ```
 
@@ -2215,7 +2215,7 @@ the only issue here is that it is not recoding the variable to make a new versio
 ``` {r include = TRUE}
 
 merged_data <- merged_data %>%
-    mutate_at(c("St1_toi1_pre", "St1_toi2_pre"),
+    mutate_at(c("St1_toi1", "St1_toi2"),
               ~ recode(., "1" = 6, "2" = 5, "3" = 4, 
                           "4" = 3, "5" = 2, "6" = 1))
 
