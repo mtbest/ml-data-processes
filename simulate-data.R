@@ -4,6 +4,9 @@
 #
 ########################
 
+## Load packages
+library(tidyverse)
+
 ## Create a simulated pre dataset
 
 # set seed
