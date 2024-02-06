@@ -15,10 +15,13 @@ library(tidyverse) # for data management
 library(psych) # to analyze data and descriptive statistics
 library(ggplot2) # to make some nice graphs
 library(pander) # to make some clean tables
+library(here) # to make it easier to grab files from the folder where this one sits
 
 ```
 
 ## Load in RScript where functions are created
+
+We don't have an RScript with functions yet
 
 ``` {r include = TRUE}
 
@@ -30,7 +33,7 @@ library(pander) # to make some clean tables
 
 ``` {r include = TRUE}
 
-source(simulate-data.R)
+source(here(simulate-data.R))
 
 ```
 
