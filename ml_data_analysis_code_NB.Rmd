@@ -57,6 +57,33 @@ pander(summarySE(d, groupvar="gv", measurevar="dv",na.rm=TRUE),round=2)
 
 ``` {r include = TRUE}
 
+# import libraries
+library(phia)
+
+# get descriptive statistics
+describeBy(d_post$Dt2_gpa, group=list(d_post$Dt2_female, d_post$St2_bel_bu1))
+
+# plot the data
+ggplot(data=d_post, aes(x=Dt2_gpa, fill=St2_bel_bu1)) +
+  geom_dotplot() + 
+  facet_grid(~Dt2_female)
+
+# build statistical model
+model <- aov(Dt2_gpa ~ Dt2_female*St2_bel_bu1, data=d_post)
+anova(model)
+
+# there was a significant interaction, so we will look at simple effects
+interactionMeans(model) # viewing adjusted means  
+plot(interactionMeans(model)) # plotting the means to get a quick view of the results
+
+# plot bar graph
+ggplot(data=d_post, aes(y=Dt2_gpa, x=St2_bel_bu1, fill=Dt2_female)) +
+  stat_summary(fun="mean", geom="bar", position="dodge") +
+  stat_summary(fun.data="mean_se", geom="errorbar", position=position_dodge(.9), width=.5)
+
+# simple effects testing
+testInteractions(model, fixed="St2_bel_bu1", pairwise="Dt2_female", adjustment="none") # simple effects testing
+testInteractions(model, fixed="Dt2_female", pairwise="St2_bel_bu1", adjustment="none") # notice that there is no adjustment to the p-value
 
 
 ```
