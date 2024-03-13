@@ -15,10 +15,13 @@ library(tidyverse) # for data management
 library(psych) # to analyze data and descriptive statistics
 library(ggplot2) # to make some nice graphs
 library(pander) # to make some clean tables
+library(here) # to make it easier to grab files from the folder where this one sits
 
 ```
 
 ## Load in RScript where functions are created
+
+We don't have an RScript with functions yet
 
 ``` {r include = TRUE}
 
@@ -30,7 +33,7 @@ library(pander) # to make some clean tables
 
 ``` {r include = TRUE}
 
-source(simulate-data.R)
+source(here(simulate-data.R))
 
 ```
 
@@ -274,12 +277,164 @@ htmlreg(list(mod1,mod2,mod3,mod4),
 
 ``` {r include = TRUE}
 
+# propensity score matching
+set.seed(123)
+
+library(MatchIt)
+library(lmtest)
+library(sandwich)
+
+match_obj <- d_post %>% # for the purpose of the exercise, we'll imagine whether they took a math class as the intervention
+  filter(!is.na(Dt2_gpa)) %>%
+  matchit(Dt2_math ~ Rt2_per_income + Dt2_race_ML + St2_sp_bel_bu1,
+                     data = ., method = "nearest", distance = "glm",
+                     ratio = 1,
+                     replace = FALSE,
+                     exact = ~ Rt2_per_income + Dt2_race_ML)
+summary(match_obj)
+
+plot(match_obj, type = "jitter", interactive = FALSE)
+plot(summary(match_obj), abs = FALSE)
+
+df_matched <- match.data(match_obj)
+
+df_matched %>%
+  group_by(Dt2_math) %>%
+  summarise(n = n(), mean = mean(Dt2_gpa, na.rm = FALSE), sd = sd(Dt2_gpa, na.rm = TRUE))
+
+propensity_mod_GPA <- lm(Dt2_gpa ~ 1 + Dt2_math, 
+                     data = df_matched, 
+                     weights = weights)
+
+coeftest(propensity_mod_GPA, vcov. = vcovCL, cluster = ~subclass) # cluster-robust SEs
+coefci(propensity_mod_GPA, vcov. = vcovCL, cluster = ~subclass, level = 0.95) # cluster-robust CIs
+
+propensity_mod_homeless <- glm(Nt2_homeless ~ 1 + Dt2_math, 
+                         data = df_matched, 
+                         family = binomial(link = "logit"),
+                         weights = weights)
+
+coeftest(propensity_mod_pass, vcov. = vcovCL, cluster = ~subclass) # cluster-robust SEs
+coefci(propensity_mod_pass, vcov. = vcovCL, cluster = ~subclass, level = 0.95) # cluster-robust CIs
+exp(0.349358) # odds ratio
+exp(0.823362) / (1 + exp(0.823362)) # probability of passing (no intervention)
+exp(0.823362 + 0.349358) / (1 + exp(0.823362 + 0.349358)) # probability of passing (intervention)
+
+prop.table(table(df_matched$Dt2_math, df_matched$Nt2_homeless), margin = 1) * 100
+
+# subgroup analyses with propensity score matching
+d_post %>%
+  group_by(Dt2_math, Rt2_per_income) %>%
+  summarise(n = n(), mean = mean(Dt2_gpa, na.rm = TRUE), sd = sd(Dt2_gpa, na.rm = TRUE))
+
+d_post %>%
+  group_by(Dt2_math, Dt2_race_ML) %>%
+  summarise(n = n(), mean = mean(Dt2_gpa, na.rm = TRUE), sd = sd(Dt2_gpa, na.rm = TRUE))
+
+# graphs
+
+## raw data
+plot_means <- ggplot(data = d_post, aes(x = Dt2_math, y = Dt2_gpa)) +
+  stat_summary(fun = "mean", geom = "bar", fill = "#182658") +
+  stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.5, size = 1) +
+  scale_x_discrete(name = "Group", labels = c("No Math", "Math")) +
+  scale_y_continuous(name = "Grade", limits = c(0, 4), breaks = seq(0, 4, 0.5)) +
+  labs(title = "Mean Difference in Grades", subtitle = "No Matching") +
+  #theme_ML +
+  theme(
+    axis.title.x = element_blank()
+  )
+
+## matched data
+plot_means_propensity <- ggplot(data = df_matched, aes(x = Dt2_math, y = Dt2_gpa)) +
+  stat_summary(fun = "mean", geom = "bar", fill = "#182658") +
+  stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.5, size = 1) +
+  scale_x_discrete(name = "Group", labels = c("No Math", "Math")) +
+  scale_y_continuous(name = "Grade", limits = c(0, 4), breaks = seq(0, 4, 0.5)) +
+  labs(subtitle = "Propensity Score Matching") +
+  #theme_ML +
+  theme(
+    axis.title.x = element_blank()
+  )
+
+ggarrange(plot_means, plot_means_propensity, nrow = 2)
+
 ```
 
 
 ### Creating a color scheme to match our ML branding and use in our graphs
 
 ``` {r include = TRUE}
+
+# This script loads the function theme_ML.
+
+# load libraries
+library(showtext)
+
+# load font
+# font_add_google("Lora")
+showtext_auto() # to work on R Studio
+
+# load logo
+logo_file_path <- "~/ML P Cen.jpg"
+logo <- magick::image_read(logo_file_path)
+
+# set font and color
+font <- "Times" # Lora not working
+ML_color <- "black" # font color
+
+# create theme_ML
+theme_ML <- theme(
+  # font
+  text = element_text(family = font),
+  # grid elements
+  panel.grid.major.x = element_blank(), #removes all vertical grid lines
+  panel.grid.major.y = element_line(colour = "lightgray", 
+                                    linewidth = 0.2,
+                                    linetype = "longdash"),
+  panel.grid.minor.x = element_blank(), #removes some horizontal lines
+  panel.grid.minor.y = element_blank(),
+  panel.grid = element_line(colour = "black"), ##### FIX (black over gray)
+  panel.background = element_blank(),
+  plot.title = element_text(
+    family = font,
+    size = 20,
+    color = ML_color, 
+    face = 'bold', 
+    hjust = 0.5,
+    vjust = 0.5
+  ), 
+  plot.subtitle = element_text(
+    family = font,
+    size = 14,
+    color = ML_color
+  ),
+  plot.caption = element_text(
+    family = font,
+    size = 9,
+    color = ML_color, 
+    face = 'bold'
+  ),
+  axis.text = element_text(
+    family = font,
+    size = 16,
+    color = "#3c3937" 
+  ),
+  axis.ticks.y = element_blank(),
+  axis.title = element_text(
+    family = font,
+    size = 24,
+    color = ML_color 
+    # face = 'bold'
+  ),
+  # legend elements
+  legend.key = element_blank(), # transparent legend background
+  legend.background = element_rect(
+    color = "black", #color of lines around legend boxes
+    fill = "white", #fill of legend boxes
+    linewidth = .8, #size of legend lines
+    linetype = "solid"), #type of legend lines
+)
 
 ```
 
